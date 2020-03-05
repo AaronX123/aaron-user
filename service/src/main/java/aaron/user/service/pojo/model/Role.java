@@ -1,0 +1,247 @@
+package aaron.user.service.pojo.model;
+
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * t_role
+ * @author
+ */
+@Table(name = "t_role")
+public class Role extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = -4264166198464071246L;
+    /**
+     * 角色ID
+     */
+    private Long id;
+
+    /**
+     * 公司ID
+     */
+    private Long companyId;
+
+    /**
+     * 组织机构ID
+     */
+    private Long orgId;
+
+    /**
+     * 角色名
+     */
+    private String name;
+
+    /**
+     * 角色代码
+     */
+    private String code;
+
+    /**
+     * 备注
+     */
+    private String remark;
+
+    /**
+     * 状态位
+     */
+    private Byte status;
+
+    /**
+     * 创建人
+     */
+    private Long createdBy;
+
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
+
+    /**
+     * 修改人
+     */
+    private Long updatedBy;
+
+    /**
+     * 修改时间
+     */
+    private Date updatedTime;
+
+    /**
+     * 版本
+     */
+    private Long version;
+
+    /**
+     * 所属机构
+     */
+    @Transient
+    private String orgName;
+
+    /**
+     *所属公司
+     */
+    @Transient
+    private String companyName;
+
+    /**
+     * 资源节点ID
+     */
+    @Transient
+    private Long resourceId;
+
+    /**
+     * 用户ID
+     */
+    @Transient
+    private Long userId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
+    public Long getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(Long orgId) {
+        this.orgId = orgId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Long getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(Long updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public Date getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Date updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public String getOrgName() {
+        return orgName;
+    }
+
+    public void setOrgName(String orgName) {
+        this.orgName = orgName;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", companyId=" + companyId +
+                ", orgId=" + orgId +
+                ", name='" + name + '\'' +
+                ", code='" + code + '\'' +
+                ", remark='" + remark + '\'' +
+                ", status=" + status +
+                ", createdBy=" + createdBy +
+                ", createdTime=" + createdTime +
+                ", updatedBy=" + updatedBy +
+                ", updatedTime=" + updatedTime +
+                ", version=" + version +
+                ", orgName='" + orgName + '\'' +
+                ", companyName='" + companyName + '\'' +
+                '}';
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+}
