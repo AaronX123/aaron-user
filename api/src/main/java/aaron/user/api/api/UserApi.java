@@ -29,7 +29,7 @@ public interface UserApi {
      * @return
      */
     @PostMapping(ApiConstant.GET_USER_NAME_BY_ID)
-    CommonResponse<String> getUserInfoById(CommonRequest<Long> request);
+    CommonResponse<String> getUserNameById(CommonRequest<Long> request);
 
     /**
      * 查询阅卷官
@@ -46,4 +46,12 @@ public interface UserApi {
      */
     @PostMapping(ApiConstant.GET_ID_BY_NAME)
     CommonResponse<String> getUserIdByName(CommonRequest<String> request);
+
+    /**
+     * 通过公司Id获取公司名称
+     * @param request
+     * @return
+     */
+    @PostMapping(ApiConstant.GET_COMPANY_NAME)
+    CommonResponse<String> getCompanyById(CommonRequest<Long> request);
 }

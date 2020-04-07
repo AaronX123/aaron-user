@@ -1,5 +1,9 @@
 package aaron.user.service.pojo.model;
 
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -9,8 +13,9 @@ import java.util.Date;
  * t_resource
  * @author
  */
-@Table(name = "t_resource")
-public class Resource extends BaseEntity implements Serializable {
+@Data
+@Accessors(chain = true)
+public class Resource extends Model<Resource> implements Serializable {
     private static final long serialVersionUID = -4681421911850865447L;
     /**
      * 资源ID
@@ -97,162 +102,9 @@ public class Resource extends BaseEntity implements Serializable {
      */
     private Long version;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getOpenImg() {
-        return openImg;
-    }
-
-    public void setOpenImg(String openImg) {
-        this.openImg = openImg;
-    }
-
-    public String getCloseImg() {
-        return closeImg;
-    }
-
-    public void setCloseImg(String closeImg) {
-        this.closeImg = closeImg;
-    }
-
-    public Byte getResourceType() {
-        return resourceType;
-    }
-
-    public void setResourceType(Byte resourceType) {
-        this.resourceType = resourceType;
-    }
-
-    public Byte getLeaf() {
-        return leaf;
-    }
-
-    public void setLeaf(Byte leaf) {
-        this.leaf = leaf;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
-
-    public Long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public Long getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(Long updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public Date getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(Date updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
 
     @Override
-    public String toString() {
-        return "Resource{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", code='" + code + '\'' +
-                ", parentId=" + parentId +
-                ", url='" + url + '\'' +
-                ", orderIndex=" + orderIndex +
-                ", openImg='" + openImg + '\'' +
-                ", closeImg='" + closeImg + '\'' +
-                ", resourceType=" + resourceType +
-                ", leaf=" + leaf +
-                ", remark='" + remark + '\'' +
-                ", status=" + status +
-                ", createdBy=" + createdBy +
-                ", createdTime=" + createdTime +
-                ", updatedBy=" + updatedBy +
-                ", updatedTime=" + updatedTime +
-                ", version=" + version +
-                '}';
-    }
-
-    public Integer getOrderIndex() {
-        return orderIndex;
-    }
-
-    public void setOrderIndex(Integer orderIndex) {
-        this.orderIndex = orderIndex;
+    protected Serializable pkVal() {
+        return id;
     }
 }

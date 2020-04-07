@@ -1,5 +1,9 @@
 package aaron.user.service.pojo.model;
 
+import com.baomidou.mybatisplus.extension.activerecord.Model;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -10,8 +14,9 @@ import java.util.Date;
  * t_department
  * @author
  */
-@Table(name = "t_department")
-public class Department extends BaseEntity implements Serializable {
+@Data
+@Accessors(chain = true)
+public class Department extends Model<Department> implements Serializable {
     private static final long serialVersionUID = 664872952706433500L;
     /**
      * 部门ID
@@ -62,7 +67,7 @@ public class Department extends BaseEntity implements Serializable {
     /**
      * 部门描述
      */
-    private String descript;
+    private String description;
 
     /**
      * 状态
@@ -94,157 +99,8 @@ public class Department extends BaseEntity implements Serializable {
      */
     private Long version;
 
-
-    public Department() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getMnemonicCode() {
-        return mnemonicCode;
-    }
-
-    public void setMnemonicCode(String mnemonicCode) {
-        this.mnemonicCode = mnemonicCode;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public String getMaster() {
-        return master;
-    }
-
-    public void setMaster(String master) {
-        this.master = master;
-    }
-
-    public String getDescript() {
-        return descript;
-    }
-
-    public void setDescript(String descript) {
-        this.descript = descript;
-    }
-
-    public Byte getStatus() {
-        return status;
-    }
-
-    public void setStatus(Byte status) {
-        this.status = status;
-    }
-
-    public Long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public Long getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(Long updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
-    public Date getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(Date updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
-    public String getParentDepartment() {
-        return parentDepartment;
-    }
-
-    public void setParentDepartment(String parentDepartment) {
-        this.parentDepartment = parentDepartment;
-    }
-
     @Override
-    public String toString() {
-        return "Department{" +
-                "id=" + id +
-                ", companyId=" + companyId +
-                ", name='" + name + '\'' +
-                ", mnemonicCode='" + mnemonicCode + '\'' +
-                ", code='" + code + '\'' +
-                ", level='" + level + '\'' +
-                ", parentId=" + parentId +
-                ", parentDepartment='" + parentDepartment + '\'' +
-                ", master='" + master + '\'' +
-                ", descript='" + descript + '\'' +
-                ", status=" + status +
-                ", createdBy=" + createdBy +
-                ", createdTime=" + createdTime +
-                ", updatedBy=" + updatedBy +
-                ", updatedTime=" + updatedTime +
-                ", version=" + version +
-                '}';
+    protected Serializable pkVal() {
+        return id;
     }
 }

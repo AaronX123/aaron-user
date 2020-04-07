@@ -2,6 +2,7 @@ package aaron.user.service.pojo.model;
 
 import java.io.Serializable;
 
+
 public class RoleUser implements Serializable {
     private static final long serialVersionUID = 2695283492843191474L;
     private Long id;
