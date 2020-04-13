@@ -79,6 +79,13 @@ public class Position extends Model<Position> implements Serializable {
     @Transient
     private String companyName;
 
+    @Transient
+    private Long judgeId;
+
+    @Transient
+    private Long oldVersion;
+
+
     @Override
     protected Serializable pkVal() {
         return id;

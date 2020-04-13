@@ -1,6 +1,6 @@
 package aaron.user.service.pojo.vo;
 
-import bosssoft.hr.train.core.data.common.BaseQueryVO;
+import aaron.common.data.common.BaseQueryVo;
 
 import java.io.Serializable;
 
@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @version V1.0.0
  * @date 2019/8/28
  */
-public class SystemParamQueryVo extends BaseQueryVO implements Serializable {
+public class SystemParamQueryVo extends BaseQueryVo implements Serializable {
     private static final long serialVersionUID = -8636652089292804036L;
     /**
      * 参数类型

@@ -1,10 +1,11 @@
 package aaron.user.service.pojo.vo;
 
-import bosssoft.hr.train.core.data.common.BaseQueryVO;
+
+import aaron.common.data.common.BaseQueryVo;
 
 import java.io.Serializable;
 
-public class UserAlloctionQuseryVo extends BaseQueryVO implements Serializable {
+public class UserAlloctionQueryVo extends BaseQueryVo implements Serializable {
     private static final long serialVersionUID = -4104146631752309115L;
     /**
      * 角色ID

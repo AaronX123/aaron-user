@@ -7,6 +7,7 @@ import aaron.common.logging.annotation.MethodEnhancer;
 import aaron.common.utils.CommonUtils;
 import aaron.common.utils.PageMapUtil;
 import aaron.user.api.dto.CompanyDto;
+import aaron.user.api.dto.TreeListDto;
 import aaron.user.service.biz.service.CompanyService;
 import aaron.user.service.common.constants.ControllerConstants;
 import aaron.user.service.common.exception.UserError;
@@ -15,13 +16,11 @@ import aaron.user.service.pojo.model.Company;
 import aaron.user.service.pojo.vo.CompanyItemVo;
 import aaron.user.service.pojo.vo.CompanyListVo;
 import aaron.user.service.pojo.vo.CompanyQueryVo;
+import aaron.user.service.pojo.vo.TreeListVo;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -90,4 +89,13 @@ public class CompanyController {
         Map map = PageMapUtil.getPageMap(listVoList,page);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,map);
     }
+
+    @GetMapping(ControllerConstants.GET_COMPANY_LIST)
+    public CommonResponse<List> getCompanyList(){
+        long judgeId = CommonUtils.judgeCompanyAndOrg();
+        List<TreeListDto> dtoList = companyService.getCompanyTree(judgeId);
+        List<TreeListVo> voList = CommonUtils.convertList(dtoList,TreeListVo.class);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,voList);
+    }
+
 }

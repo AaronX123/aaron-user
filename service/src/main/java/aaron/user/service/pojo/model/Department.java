@@ -99,6 +99,12 @@ public class Department extends Model<Department> implements Serializable {
      */
     private Long version;
 
+    @Transient
+    private Long judgeId;
+
+    @Transient
+    private Long oldVersion;
+
     @Override
     protected Serializable pkVal() {
         return id;

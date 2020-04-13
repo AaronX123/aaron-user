@@ -6,8 +6,14 @@ package aaron.user.service.common.exception;
  * @since 2020-04-07
  */
 public enum  UserError {
-    DATA_NOT_EXIST("020001","数据不存在");
+    DATA_NOT_EXIST("020001","数据不存在"),
+    SAVE_FAIL("020002","保存失败"),
+    UPDATE_FAIL("020003","更新失败"),
+    DELETE_FAIL("020004","删除失败"),
 
+    EXIST_SUB_DEP("020005","所选部门中存在下级部门，无法删除"),
+    USER_OR_PASSWORD_ERROR("020006","用户名或密码错误"),
+    RECORD_IS_IN_USE("020007","所选职位中存在被使用职位，无法删除"),
     ;
     String msg;
     String code;
