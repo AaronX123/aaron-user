@@ -2,12 +2,20 @@ package aaron.user.service.api.impl;
 
 import aaron.common.data.common.CommonRequest;
 import aaron.common.data.common.CommonResponse;
+import aaron.common.data.common.CommonState;
 import aaron.user.api.api.UserApi;
+import aaron.user.api.constant.ApiConstant;
 import aaron.user.api.dto.UserDto;
-import aaron.user.api.dto.UserInfoDto;
+import aaron.user.api.dto.CompanyAndUserVo;
+import aaron.user.service.biz.service.CompanyService;
+import aaron.user.service.biz.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiaoyouming
@@ -16,14 +24,26 @@ import java.util.List;
  */
 @RestController
 public class UserApiImpl implements UserApi {
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    CommonState state;
+
+    @Autowired
+    CompanyService companyService;
+
     /**
-     * 通过用户Id获取用户名称
+     * 获取公司和用户名称
      *
      * @param request
      * @return
      */
-    public CommonResponse<UserInfoDto> getUserInfo(CommonRequest<List<Long>> request) {
-        return null;
+    @Override
+    @PostMapping(ApiConstant.GET_USER_NAME)
+    public CommonResponse<CompanyAndUserVo> getUserInfo(@RequestBody CommonRequest<List<Long>> request) {
+        CompanyAndUserVo res = userService.getUserData(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,res);
     }
 
     /**
@@ -32,8 +52,11 @@ public class UserApiImpl implements UserApi {
      * @param request
      * @return
      */
-    public CommonResponse<String> getUserNameById(CommonRequest<Long> request) {
-        return null;
+    @Override
+    @PostMapping(ApiConstant.GET_USER_NAME_BY_ID)
+    public CommonResponse<String> getUserNameById(@RequestBody CommonRequest<Long> request) {
+        String name = userService.getUserName(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,name);
     }
 
     /**
@@ -42,8 +65,11 @@ public class UserApiImpl implements UserApi {
      * @param request
      * @return
      */
-    public CommonResponse<UserDto> queryScoringOfficer(CommonRequest<UserDto> request) {
-        return null;
+    @Override
+    @PostMapping(ApiConstant.GET_SCORING_OFFICER)
+    public CommonResponse<List<UserDto>> queryScoringOfficer(@RequestBody CommonRequest<UserDto> request) {
+        List<UserDto> userDtoList = userService.queryScoringOfficerList(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,userDtoList);
     }
 
     /**
@@ -52,8 +78,11 @@ public class UserApiImpl implements UserApi {
      * @param request
      * @return
      */
-    public CommonResponse<String> getUserIdByName(CommonRequest<String> request) {
-        return null;
+    @Override
+    @PostMapping(ApiConstant.GET_ID_BY_NAME)
+    public CommonResponse<Long> getUserIdByName(@RequestBody CommonRequest<String> request) {
+        Long mostPossibleId = userService.getMostPossibleUserId(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,mostPossibleId);
     }
 
     /**
@@ -62,7 +91,10 @@ public class UserApiImpl implements UserApi {
      * @param request
      * @return
      */
-    public CommonResponse<String> getCompanyById(CommonRequest<Long> request) {
-        return null;
+    @Override
+    @PostMapping(ApiConstant.GET_COMPANY_NAME)
+    public CommonResponse<String> getCompanyById(@RequestBody CommonRequest<Long> request) {
+        String company = companyService.getNameById(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,company);
     }
 }

@@ -49,7 +49,7 @@ public class LoginController {
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,loginService.getUserInfo());
     }
 
-    @GetMapping(ControllerConstants.USER_MENU)
+    @PostMapping(ControllerConstants.USER_MENU)
     public CommonResponse<List<UserMenu>> getUserMenu(){
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,loginService.getUserMenu());
     }

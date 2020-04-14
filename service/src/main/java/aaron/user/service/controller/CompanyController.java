@@ -90,7 +90,7 @@ public class CompanyController {
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,map);
     }
 
-    @GetMapping(ControllerConstants.GET_COMPANY_LIST)
+    @PostMapping(ControllerConstants.GET_COMPANY_LIST)
     public CommonResponse<List> getCompanyList(){
         long judgeId = CommonUtils.judgeCompanyAndOrg();
         List<TreeListDto> dtoList = companyService.getCompanyTree(judgeId);

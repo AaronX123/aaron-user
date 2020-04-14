@@ -14,6 +14,9 @@ public enum  UserError {
     EXIST_SUB_DEP("020005","所选部门中存在下级部门，无法删除"),
     USER_OR_PASSWORD_ERROR("020006","用户名或密码错误"),
     RECORD_IS_IN_USE("020007","所选职位中存在被使用职位，无法删除"),
+    RESOURCE_IS_IN_USE("020008","所选资源存在子资源，无法删除"),
+    ROLE_IS_IN_USE("020009","所选角色正在被使用，无法删除"),
+    ALLOC_FAIL("020010","分配失败"),
     ;
     String msg;
     String code;

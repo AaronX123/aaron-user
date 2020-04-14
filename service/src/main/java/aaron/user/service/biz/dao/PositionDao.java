@@ -1,7 +1,9 @@
 package aaron.user.service.biz.dao;
 
 import aaron.user.api.dto.PositionDto;
+import aaron.user.api.dto.UserOptionsDto;
 import aaron.user.service.pojo.model.Position;
+import aaron.user.service.pojo.model.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.*;
 
@@ -15,6 +17,14 @@ import java.util.Map;
  */
 @Mapper
 public interface PositionDao extends BaseMapper<Position> {
+    /**
+     * 查询职位集合
+     * @return 职位集合
+     */
+    @Select("SELECT id AS positionId,name AS positionName,company_id FROM t_position ORDER BY LENGTH(name)")
+    List<UserOptionsDto> queryPosition();
+
+
     @Update("<script>" +
             "UPDATE t_position " +
             "SET id = #{id},company_id = #{companyId},name = #{name},code = #{code},remark = #{remark}," +

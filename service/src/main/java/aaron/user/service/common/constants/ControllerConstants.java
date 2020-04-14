@@ -33,4 +33,16 @@ public class ControllerConstants {
     public static final String USER_MENU = "/user/menu";
     public static final String LOGOUT = "/logout";
     public static final String QUERY_OPTIONS = "/query/options";
+
+    public static final String GET_RESOURCE_LIST = "/get/resource/list";
+    public static final String ALLOC_USER_ROLE = "/alloc/user/role";
+    public static final String UPDATE_RESOURCE_FOR_ROLE = "/update/resource/for/role";
+    public static final String GET_USER_ROLE_FORM = "/get/user/role/form";
+    public static final String GET_RESOURCE_FOR_ROLE_FORM = "/get/resource/for/role/form";
+    public static final String GET_ROLE_LIST = "/get/role/list";
+    public static final String GET_SYSTEM_PARAM_LIST = "/get/system/param/list";
+    public static final String QUERY_ROLE = "/query/role";
+    public static final String ALLOC_ROLE_USER = "/alloc/role/user";
+    public static final String QUERY_ALL_ONLINE_USER = "/query/all/online/user";
+    public static final String KICK_USERS = "/kick/users";
 }

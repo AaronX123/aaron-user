@@ -92,7 +92,7 @@ public class DepartmentController {
     }
 
     @MethodEnhancer
-    @GetMapping(ControllerConstants.GET_DEP_LEVEL)
+    @PostMapping(ControllerConstants.GET_DEP_LEVEL)
     public CommonResponse<List> queryLevel(){
         List<Department> departmentList = departmentService.queryLevel();
         List<DepartmentQueryVo> res = CommonUtils.convertList(departmentList,DepartmentQueryVo.class);
@@ -100,7 +100,7 @@ public class DepartmentController {
     }
 
     @MethodEnhancer
-    @GetMapping(ControllerConstants.GET_DEP_PARENT)
+    @PostMapping(ControllerConstants.GET_DEP_PARENT)
     public CommonResponse<List> queryParent(){
         List<Department> departmentList = departmentService.queryParent();
         List<DepartmentQueryVo> res = CommonUtils.convertList(departmentList,DepartmentQueryVo.class);
@@ -108,7 +108,7 @@ public class DepartmentController {
     }
 
     @MethodEnhancer
-    @GetMapping(ControllerConstants.GET_DEP_TREE_DATA)
+    @PostMapping(ControllerConstants.GET_DEP_TREE_DATA)
     public CommonResponse<List> queryTreeData(){
         List<TreeList> departmentList = departmentService.queryTreeData();
         List<TreeListVo> res = CommonUtils.convertList(departmentList,TreeListVo.class);

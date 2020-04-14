@@ -1,9 +1,6 @@
 package aaron.user.service.pojo.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -12,45 +9,44 @@ import java.util.Date;
  * @version V1.0.0
  * @date 2019/8/28
  */
-public class UserListVO extends BaseVo implements Serializable {
-    private static final long serialVersionUID = 4924379383104659009L;
+public class UserItemVo extends BaseVo implements Serializable {
+    private static final long serialVersionUID = 4116035229776194913L;
     /**
      * 用户ID
      */
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
      * 职位ID
      */
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long positionId;
 
     /**
      * 部门ID
      */
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long departmentId;
 
     /**
-     * 公司Id
+     * 公司ID
      */
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long companyId;
 
     /**
      * 工号
      */
+    @NotNull(message = "工号不能为空")
     private String code;
 
     /**
      * 密码
      */
+    @NotNull(message = "密码不能为空")
     private String password;
 
     /**
      * 姓名
      */
+    @NotNull(message = "姓名不能为空")
     private String name;
 
     /**
@@ -59,50 +55,27 @@ public class UserListVO extends BaseVo implements Serializable {
     private String profilePicture;
 
     /**
-     * 角色名
-     */
-    private String roleName;
-
-    /**
-     * 公司名
-     */
-    private String companyName;
-
-    /**
-     * 部门
-     */
-    private String departmentName;
-
-    /**
-     * 角色ID
-     */
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long roleId;
-
-    /**
      * 性别
      */
+    @NotNull(message = "性别不能为空")
     private Byte sex;
 
     /**
      * 生日
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
+    @NotNull(message = "生日不能为空")
     private Date birthday;
-
-    /**
-     * 职位名
-     */
-    private String positionName;
 
     /**
      * 电话
      */
+    @NotNull(message = "电话不能为空")
     private String tel;
 
     /**
      * 邮箱
      */
+    @NotNull(message = "邮箱不能为空")
     private String email;
 
     /**
@@ -119,6 +92,19 @@ public class UserListVO extends BaseVo implements Serializable {
      * 状态位
      */
     private Byte status;
+
+    /**
+     * 角色ID
+     */
+    private Long roleId;
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
 
     public Long getId() {
         return id;
@@ -232,28 +218,12 @@ public class UserListVO extends BaseVo implements Serializable {
         this.profilePicture = profilePicture;
     }
 
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public String getPositionName() {
-        return positionName;
-    }
-
-    public void setPositionName(String positionName) {
-        this.positionName = positionName;
-    }
-
-    public UserListVO() {
+    public UserItemVo() {
     }
 
     @Override
     public String toString() {
-        return "UserListVO{" +
+        return "UserItemVo{" +
                 "id=" + id +
                 ", positionId=" + positionId +
                 ", departmentId=" + departmentId +
@@ -262,35 +232,15 @@ public class UserListVO extends BaseVo implements Serializable {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", profilePicture='" + profilePicture + '\'' +
-                ", roleName='" + roleName + '\'' +
-                ", companyName='" + companyName + '\'' +
-                ", departmentName='" + departmentName + '\'' +
-                ", roleId=" + roleId +
                 ", sex=" + sex +
                 ", birthday=" + birthday +
-                ", positionName='" + positionName + '\'' +
                 ", tel='" + tel + '\'' +
                 ", email='" + email + '\'' +
                 ", other='" + other + '\'' +
                 ", remark='" + remark + '\'' +
                 ", status=" + status +
+                ", roleId=" + roleId +
                 '}';
-    }
-
-    public Long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
-    }
-
-    public String getDepartmentName() {
-        return departmentName;
-    }
-
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
     }
 
     public Long getCompanyId() {
@@ -299,13 +249,5 @@ public class UserListVO extends BaseVo implements Serializable {
 
     public void setCompanyId(Long companyId) {
         this.companyId = companyId;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
     }
 }

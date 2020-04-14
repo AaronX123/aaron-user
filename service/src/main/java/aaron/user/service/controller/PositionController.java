@@ -83,7 +83,7 @@ public class PositionController {
     }
 
     @MethodEnhancer
-    @GetMapping(ControllerConstants.QUERY_OPTIONS)
+    @PostMapping(ControllerConstants.QUERY_OPTIONS)
     public CommonResponse<List> queryCompOptions(){
         List<Position> positionList = positionService.listCompany();
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,CommonUtils.convertList(positionList,PositionListVo.class));

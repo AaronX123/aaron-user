@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -62,6 +63,13 @@ public class UserOnlineInfo extends Model<UserOnlineInfo> implements Serializabl
      * 状态位
      */
     private Byte status;
+
+    @Transient
+    private Long judgeId;
+
+    @Transient
+    private Long oldVersion;
+
 
     @Override
     protected Serializable pkVal() {

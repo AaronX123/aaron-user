@@ -52,4 +52,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyDao, Company> impleme
         }
         return CommonUtils.convertList(treeList,TreeListDto.class);
     }
+
+    @Override
+    public String getNameById(long id) {
+        return baseMapper.selectNameById(id);
+    }
 }

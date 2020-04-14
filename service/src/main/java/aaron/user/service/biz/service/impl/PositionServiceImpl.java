@@ -5,6 +5,7 @@ import aaron.common.aop.enums.EnumOperation;
 import aaron.common.utils.CommonUtils;
 import aaron.common.utils.TokenUtils;
 import aaron.user.api.dto.PositionDto;
+import aaron.user.api.dto.UserOptionsDto;
 import aaron.user.service.biz.dao.PositionDao;
 import aaron.user.service.biz.service.PositionService;
 import aaron.user.service.common.exception.UserError;
@@ -67,5 +68,15 @@ public class PositionServiceImpl extends ServiceImpl<PositionDao, Position> impl
     @Override
     public List<Position> listCompany() {
         return baseMapper.queryOptions();
+    }
+
+    /**
+     * 查询职位
+     *
+     * @return 职位集合
+     */
+    @Override
+    public List<UserOptionsDto> queryPosition() {
+        return baseMapper.queryPosition();
     }
 }

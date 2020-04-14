@@ -1,12 +1,37 @@
 package aaron.user.service.controller;
 
+import aaron.common.data.common.CommonRequest;
+import aaron.common.data.common.CommonResponse;
+import aaron.common.data.common.CommonState;
+import aaron.common.logging.annotation.MethodEnhancer;
+import aaron.common.utils.CommonUtils;
+import aaron.common.utils.PageMapUtil;
+import aaron.user.api.dto.UserDto;
+import aaron.user.api.dto.UserOptionsDto;
+import aaron.user.api.dto.UserRoleDto;
+import aaron.user.service.biz.service.PositionService;
+import aaron.user.service.biz.service.RoleService;
+import aaron.user.service.biz.service.UserService;
 import aaron.user.service.common.constants.ControllerConstants;
+import aaron.user.service.pojo.model.User;
+import aaron.user.service.pojo.vo.UserItemVo;
+import aaron.user.service.pojo.vo.UserListVo;
+import aaron.user.service.pojo.vo.UserQueryVo;
+import aaron.user.service.pojo.vo.UserRoleVo;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiaoyouming
@@ -20,9 +45,78 @@ public class UserController {
     @Autowired
     CacheManager cacheManager;
 
-    public void test(){
-        Cache cache = cacheManager.getCache("缓存的名称");
-        Cache.ValueWrapper wrapper = cache.get("缓存的KEY");
-        Object value = wrapper.get();
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    RoleService roleService;
+
+    @Autowired
+    PositionService positionService;
+
+    @Autowired
+    CommonState state;
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.SAVE)
+    public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<UserItemVo> request){
+        UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
+        userService.save(userDto);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
+    }
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.UPDATE)
+    public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<UserItemVo> request){
+        UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
+        userDto.setOldVersion(userDto.getVersion());
+        userService.update(userDto);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
+    }
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.QUERY_UPDATE_FORM)
+    public CommonResponse<UserListVo> getUpdateForm(@RequestBody @Valid CommonRequest<Long> request){
+        User user = userService.getById(request.getData());
+        UserListVo userListVo = CommonUtils.copyProperties(user,UserListVo.class);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,userListVo);
+    }
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.DELETE)
+    public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<UserItemVo>> request){
+        List<UserDto> userDtoList = CommonUtils.convertList(request.getData(),UserDto.class);
+        userService.delete(userDtoList);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
+    }
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.QUERY)
+    public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<UserQueryVo> request){
+        UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
+        userDto.setJudgeId(CommonUtils.judgeCompanyAndOrg());
+        Page<UserListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
+        List<User> userList = userService.queryByCondition(userDto);
+        List<UserListVo> userListVoList = CommonUtils.convertList(userList,UserListVo.class);
+        Map map = PageMapUtil.getPageMap(userListVoList,page);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,map);
+    }
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.QUERY_ROLE)
+    public CommonResponse<Map> queryRole(){
+        List<UserOptionsDto> userRole = roleService.queryRole();
+        List<UserOptionsDto> userPosition = positionService.queryPosition();
+        Map<String,List> map = new HashMap<>(2);
+        map.put("role",userRole);
+        map.put("position",userPosition);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,map);
+    }
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.ALLOC_ROLE_USER)
+    public CommonResponse<Boolean> allocRoleUser(@RequestBody @Valid CommonRequest<UserRoleDto> request){
+        userService.addRoleForUser(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
     }
 }

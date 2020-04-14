@@ -15,6 +15,9 @@ import java.util.List;
  */
 @Mapper
 public interface CompanyDao extends BaseMapper<Company> {
+    @Select("SELECT name FROM t_company WHERE id = #{id}")
+    String selectNameById(Long id);
+
     /**
      * 模糊查询
      * @param company 查询条件

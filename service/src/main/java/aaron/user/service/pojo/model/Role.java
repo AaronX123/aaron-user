@@ -102,6 +102,12 @@ public class Role extends Model<Role> implements Serializable {
     @Transient
     private Long userId;
 
+    @Transient
+    private Long judgeId;
+
+    @Transient
+    private Long oldVersion;
+
     @Override
     protected Serializable pkVal() {
         return id;

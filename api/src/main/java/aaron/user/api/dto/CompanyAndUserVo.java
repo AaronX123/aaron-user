@@ -17,6 +17,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInfoDto {
-    Map<Long,String> nameMap;
+public class CompanyAndUserVo {
+    String company;
+    String user;
 }
