@@ -1,9 +1,7 @@
 package aaron.user.service.biz.service;
 
-import aaron.user.api.dto.CompanyAndUserVo;
-import aaron.user.api.dto.UserDto;
-import aaron.user.api.dto.UserOptionsDto;
-import aaron.user.api.dto.UserRoleDto;
+import aaron.user.api.dto.*;
+import aaron.user.service.pojo.model.TreeList;
 import aaron.user.service.pojo.model.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -54,4 +52,11 @@ public interface UserService extends IService<User> {
      * @return 是否分配成功
      */
     boolean addRoleForUser(UserRoleDto userRoleDTO);
+
+    /**
+     * 获取用户树集合
+     * @param judgeId 组织机构Id或公司Id
+     * @return 以树（treelist）形式返回数据
+     */
+    List<TreeList> getQueryListData(Long judgeId);
 }

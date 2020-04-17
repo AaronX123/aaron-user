@@ -6,10 +6,7 @@ import aaron.common.data.common.CacheConstants;
 import aaron.common.utils.CommonUtils;
 import aaron.common.utils.SnowFlake;
 import aaron.common.utils.TokenUtils;
-import aaron.user.api.dto.CompanyAndUserVo;
-import aaron.user.api.dto.UserDto;
-import aaron.user.api.dto.UserOptionsDto;
-import aaron.user.api.dto.UserRoleDto;
+import aaron.user.api.dto.*;
 import aaron.user.service.biz.dao.RoleDao;
 import aaron.user.service.biz.dao.UserDao;
 import aaron.user.service.biz.service.CompanyService;
@@ -18,6 +15,7 @@ import aaron.user.service.biz.service.UserService;
 import aaron.user.service.common.exception.UserError;
 import aaron.user.service.common.exception.UserException;
 import aaron.user.service.pojo.model.Company;
+import aaron.user.service.pojo.model.TreeList;
 import aaron.user.service.pojo.model.User;
 import aaron.user.service.pojo.model.UserRole;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -235,5 +233,19 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
     @Override
     public Long getMostPossibleUserId(String name) {
         return baseMapper.selectIdByName(name);
+    }
+
+    /**
+     * 获取用户树集合
+     *
+     * @param judgeId 组织机构Id或公司Id
+     * @return 以树（treelist）形式返回数据
+     */
+    @Override
+    public List<TreeList> getQueryListData(Long judgeId) {
+        if (judgeId.equals(TokenUtils.getUser().getOrgId())){
+            judgeId = null;
+        }
+        return baseMapper.getQueryListData(judgeId);
     }
 }

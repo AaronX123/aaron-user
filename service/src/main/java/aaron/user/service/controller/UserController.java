@@ -6,6 +6,7 @@ import aaron.common.data.common.CommonState;
 import aaron.common.logging.annotation.MethodEnhancer;
 import aaron.common.utils.CommonUtils;
 import aaron.common.utils.PageMapUtil;
+import aaron.user.api.dto.TreeListDto;
 import aaron.user.api.dto.UserDto;
 import aaron.user.api.dto.UserOptionsDto;
 import aaron.user.api.dto.UserRoleDto;
@@ -13,11 +14,9 @@ import aaron.user.service.biz.service.PositionService;
 import aaron.user.service.biz.service.RoleService;
 import aaron.user.service.biz.service.UserService;
 import aaron.user.service.common.constants.ControllerConstants;
+import aaron.user.service.pojo.model.TreeList;
 import aaron.user.service.pojo.model.User;
-import aaron.user.service.pojo.vo.UserItemVo;
-import aaron.user.service.pojo.vo.UserListVo;
-import aaron.user.service.pojo.vo.UserQueryVo;
-import aaron.user.service.pojo.vo.UserRoleVo;
+import aaron.user.service.pojo.vo.*;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -112,6 +111,15 @@ public class UserController {
         map.put("position",userPosition);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,map);
     }
+
+
+    @PostMapping(ControllerConstants.QUERY_USER_TREE)
+    public CommonResponse<List> queryUserTree(){
+        List<TreeList> treeListDtoList = userService.getQueryListData(CommonUtils.judgeCompanyAndOrg());
+        List<TreeListVo> treeListVos = CommonUtils.convertList(treeListDtoList,TreeListVo.class);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,treeListVos);
+    }
+
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.ALLOC_ROLE_USER)

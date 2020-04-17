@@ -1,6 +1,7 @@
 package aaron.user.service.biz.dao;
 
 import aaron.common.utils.jwt.UserPermission;
+import aaron.user.service.pojo.model.TreeList;
 import aaron.user.service.pojo.model.User;
 import aaron.user.service.pojo.vo.UserInfo;
 import aaron.user.service.pojo.vo.UserMenu;
@@ -117,4 +118,32 @@ public interface UserDao extends BaseMapper<User> {
             return sb.toString();
         }
     }
+
+
+    /**
+     * 查询用户记录输出树
+     * @return treelist记录
+     */
+    @Select("<script>" +
+            "SELECT id,name,company_id AS parent_id,company_id AS root_id,version from t_department " +
+            "WHERE level = '1' " +
+            "<if test=\"_parameter!=null and _parameter!=''\">" +
+            "AND company_id = #{_parameter} " +
+            "</if>" +
+            "UNION  " +
+            "SELECT id,name,parent_id,company_id AS root_id,version from t_department " +
+            "WHERE level != '1' " +
+            "<if test=\"_parameter!=null and _parameter!=''\">" +
+            "AND company_id = #{_parameter} " +
+            "</if>" +
+            "UNION  " +
+            "SELECT id,name,null AS parent_id,id AS root_id,version FROM t_company " +
+            "<where>" +
+            "<if test=\"_parameter!=null and _parameter!=''\">" +
+            "id = #{_parameter} " +
+            "</if>" +
+            "</where>" +
+            "ORDER BY parent_id" +
+            "</script>")
+    List<TreeList> getQueryListData(Long judgeId);
 }

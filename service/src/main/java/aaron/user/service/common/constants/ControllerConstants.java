@@ -45,4 +45,5 @@ public class ControllerConstants {
     public static final String ALLOC_ROLE_USER = "/alloc/role/user";
     public static final String QUERY_ALL_ONLINE_USER = "/query/all/online/user";
     public static final String KICK_USERS = "/kick/users";
+    public static final String QUERY_USER_TREE = "/query/user/tree";
 }

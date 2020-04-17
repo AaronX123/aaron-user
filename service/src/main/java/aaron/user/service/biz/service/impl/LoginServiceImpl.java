@@ -72,16 +72,16 @@ public class LoginServiceImpl implements LoginService {
         userOnlineInfoDao.insert(userOnlineInfo);
         userPermission.setUserOnlineId(userOnlineInfo.getId());
         String token = JwtUtil.createJwt(userPermission);
-        Cache cache = cacheManager.getCache(CacheConstants.USER_PERMISSION);
+        Cache userPermissionCache = cacheManager.getCache(CacheConstants.USER_PERMISSION);
         // 根据userId查询是否已经有缓存
-        Cache.ValueWrapper valueWrapper = cache.get(userPermission.getId());
+        Cache.ValueWrapper valueWrapper = userPermissionCache.get(userPermission.getId());
         if (valueWrapper != null){
             List<Long> ids = new ArrayList<>();
             ids.add(userPermission.getId());
             logout(ids);
         }
         // 存token
-        cache.put(userPermission.getId(),token);
+        userPermissionCache.put(userPermission.getId(),userPermission);
         return token;
     }
 

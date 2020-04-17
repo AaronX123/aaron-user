@@ -75,4 +75,12 @@ public class OrganizationController {
         Map<String,Object> pageMap = PageMapUtil.getPageMap(organizationList,page);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,pageMap);
     }
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.QUERY_UPDATE_FORM)
+    public CommonResponse<OrganizationListVo> getUpdateForm(@RequestBody CommonRequest<Long> request){
+        Organization organization = organizationService.getById(request.getData());
+        OrganizationListVo organizationListVo = CommonUtils.copyProperties(organization,OrganizationListVo.class);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,organizationListVo);
+    }
 }
