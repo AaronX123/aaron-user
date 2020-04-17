@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(ControllerConstants.COMPANY)
+@CrossOrigin(allowedHeaders = "*",allowCredentials = "true",methods = {})
 public class CompanyController {
     @Autowired
     CompanyService companyService;
@@ -42,7 +43,7 @@ public class CompanyController {
     CommonState state;
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.SAVE)
+    @PostMapping(ControllerConstants.SAVE_C)
     public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<CompanyItemVo> request){
         CompanyDto dto = CommonUtils.copyProperties(request.getData(),CompanyDto.class);
         companyService.save(dto);
@@ -50,7 +51,7 @@ public class CompanyController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DELETE)
+    @PostMapping(ControllerConstants.DELETE_C)
     public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<CompanyItemVo>> request){
         List<CompanyItemVo> itemVoList = request.getData();
         List<Long> idList = itemVoList.stream().map(CompanyItemVo::getId).collect(Collectors.toList());
@@ -59,7 +60,7 @@ public class CompanyController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE)
+    @PostMapping(ControllerConstants.UPDATE_C)
     public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<CompanyItemVo> request){
         CompanyDto dto = CommonUtils.copyProperties(request.getData(),CompanyDto.class);
         dto.setOldVersion(request.getData().getVersion());
@@ -68,7 +69,7 @@ public class CompanyController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_UPDATE_FORM)
+    @PostMapping(ControllerConstants.GET_UPDATE_FORM_C)
     public CommonResponse<CompanyListVo> getUpdateForm(@RequestBody @Valid CommonRequest<Long> request){
         Company company = companyService.getById(request.getData());
         if (company == null){
@@ -79,7 +80,7 @@ public class CompanyController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY)
+    @PostMapping(ControllerConstants.QUERY_C)
     public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<CompanyQueryVo> request){
         CompanyDto dto = CommonUtils.copyProperties(request.getData(),CompanyDto.class);
         dto.setJudgeId(CommonUtils.judgeCompanyAndOrg());

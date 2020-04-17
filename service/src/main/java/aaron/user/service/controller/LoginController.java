@@ -27,6 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(ControllerConstants.LOGIN)
+@CrossOrigin(allowedHeaders = "*",allowCredentials = "true",methods = {})
 public class LoginController {
     @Autowired
     private LoginService loginService;

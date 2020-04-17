@@ -17,10 +17,7 @@ import aaron.user.service.pojo.vo.ResourceQueryVo;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -34,6 +31,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(ControllerConstants.RESOURCE)
+@CrossOrigin(allowedHeaders = "*",allowCredentials = "true",methods = {})
 public class ResourceController {
     @Autowired
     ResourceService resourceService;
@@ -42,7 +40,7 @@ public class ResourceController {
     CommonState state;
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.SAVE)
+    @PostMapping(ControllerConstants.SAVE_R)
     public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<ResourceItemVo> request){
         ResourceDto resourceDto = CommonUtils.copyProperties(request.getData(),ResourceDto.class);
         resourceService.save(resourceDto);
@@ -50,7 +48,7 @@ public class ResourceController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_UPDATE_FORM)
+    @PostMapping(ControllerConstants.GET_UF_R)
     public CommonResponse<ResourceListVo> queryUpdateForm(@RequestBody CommonRequest<Long> request){
         Resource resource = resourceService.getById(request.getData());
         ResourceListVo resourceListVo = CommonUtils.copyProperties(resource,ResourceListVo.class);
@@ -58,7 +56,7 @@ public class ResourceController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DELETE)
+    @PostMapping(ControllerConstants.DEL_R)
     public CommonResponse<Boolean> delete(@RequestBody CommonRequest<List<ResourceItemVo>> request){
         List<Resource> resourceList = CommonUtils.convertList(request.getData(),Resource.class);
         resourceService.delete(resourceList);
@@ -67,7 +65,7 @@ public class ResourceController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE)
+    @PostMapping(ControllerConstants.UPDATE_R)
     public CommonResponse<Boolean> update(@RequestBody CommonRequest<ResourceItemVo> request){
         ResourceDto resourceDto = CommonUtils.copyProperties(request.getData(),ResourceDto.class);
         resourceService.update(resourceDto);
@@ -75,7 +73,7 @@ public class ResourceController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY)
+    @PostMapping(ControllerConstants.QUERY_R)
     public CommonResponse<Map> query(@RequestBody CommonRequest<ResourceQueryVo> request){
         ResourceDto resourceDto = CommonUtils.copyProperties(request.getData(),ResourceDto.class);
         Page<ResourceListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
@@ -86,7 +84,7 @@ public class ResourceController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.GET_RESOURCE_LIST)
+    @PostMapping(ControllerConstants.QUERY_LIST_R)
     public CommonResponse<List<TreeListDto>> getResourceList(@RequestBody CommonRequest<ResourceQueryVo> request){
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,resourceService.getQueryList());
     }

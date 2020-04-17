@@ -16,10 +16,7 @@ import aaron.user.service.pojo.vo.OrganizationQueryVo;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,6 +29,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(ControllerConstants.ORG)
+@CrossOrigin(allowedHeaders = "*",allowCredentials = "true",methods = {})
 public class OrganizationController {
     @Autowired
     OrganizationService organizationService;
@@ -40,7 +38,7 @@ public class OrganizationController {
     CommonState state;
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.SAVE)
+    @PostMapping(ControllerConstants.SAVE_O)
     public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<OrganizationItemVo> request){
         OrganizationDto organizationDto = CommonUtils.copyProperties(request.getData(),OrganizationDto.class);
         organizationService.save(organizationDto);
@@ -49,7 +47,7 @@ public class OrganizationController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DELETE)
+    @PostMapping(ControllerConstants.DEL_O)
     public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<OrganizationItemVo>> request){
         List<OrganizationDto> dtoList = CommonUtils.convertList(request.getData(),OrganizationDto.class);
         organizationService.delete(dtoList);
@@ -58,7 +56,7 @@ public class OrganizationController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE)
+    @PostMapping(ControllerConstants.UPDATE_O)
     public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<OrganizationItemVo> request){
         OrganizationDto organizationDto = CommonUtils.copyProperties(request.getData(),OrganizationDto.class);
         organizationDto.setOldVersion(organizationDto.getVersion());
@@ -67,7 +65,7 @@ public class OrganizationController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY)
+    @PostMapping(ControllerConstants.QUERY_O)
     public CommonResponse<Map> query(@RequestBody CommonRequest<OrganizationQueryVo> request){
         OrganizationDto dto = CommonUtils.copyProperties(request.getData(),OrganizationDto.class);
         Page<OrganizationListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
@@ -77,7 +75,7 @@ public class OrganizationController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_UPDATE_FORM)
+    @PostMapping(ControllerConstants.GET_UF)
     public CommonResponse<OrganizationListVo> getUpdateForm(@RequestBody CommonRequest<Long> request){
         Organization organization = organizationService.getById(request.getData());
         OrganizationListVo organizationListVo = CommonUtils.copyProperties(organization,OrganizationListVo.class);

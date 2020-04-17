@@ -29,6 +29,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(ControllerConstants.POSITION)
+@CrossOrigin(allowedHeaders = "*",allowCredentials = "true",methods = {})
 public class PositionController {
     @Autowired
     PositionService positionService;
@@ -38,7 +39,7 @@ public class PositionController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.SAVE)
+    @PostMapping(ControllerConstants.SAVE_P)
     public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<PositionItemVo> request){
         PositionDto positionDto = CommonUtils.copyProperties(request.getData(),PositionDto.class);
         positionService.save(positionDto);
@@ -46,7 +47,7 @@ public class PositionController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE)
+    @PostMapping(ControllerConstants.UPDATE_P)
     public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<PositionItemVo> request){
         PositionDto positionDto = CommonUtils.copyProperties(request.getData(),PositionDto.class);
         positionDto.setOldVersion(positionDto.getVersion());
@@ -55,7 +56,7 @@ public class PositionController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DELETE)
+    @PostMapping(ControllerConstants.DEL_P)
     public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<PositionItemVo>> request){
         List<Position> positionList = CommonUtils.convertList(request.getData(),Position.class);
         positionService.delete(positionList);
@@ -63,7 +64,7 @@ public class PositionController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_UPDATE_FORM)
+    @PostMapping(ControllerConstants.GET_UF_P)
     public CommonResponse<PositionListVo> getUpdateForm(@RequestBody @Valid CommonRequest<Long> request){
         Position position = positionService.getById(request.getData());
         PositionListVo positionListVo = CommonUtils.copyProperties(position,PositionListVo.class);
@@ -71,7 +72,7 @@ public class PositionController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY)
+    @PostMapping(ControllerConstants.QUERY_P)
     public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<PositionQueryVo> request){
         Position position = CommonUtils.copyProperties(request.getData(),Position.class);
         position.setJudgeId(CommonUtils.judgeCompanyAndOrg());
@@ -83,7 +84,7 @@ public class PositionController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_OPTIONS)
+    @PostMapping(ControllerConstants.QUERY_OPTIONS_P)
     public CommonResponse<List> queryCompOptions(){
         List<Position> positionList = positionService.listCompany();
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,CommonUtils.convertList(positionList,PositionListVo.class));

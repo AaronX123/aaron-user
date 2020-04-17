@@ -16,10 +16,7 @@ import aaron.user.service.pojo.vo.UserOnlineInfoQueryVo;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -32,6 +29,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(ControllerConstants.USER_ONLINE)
+@CrossOrigin(allowedHeaders = "*",allowCredentials = "true",methods = {})
 public class UserOnlineController {
     @Autowired
     UserOnlineInfoService userOnlineInfoService;
@@ -43,7 +41,7 @@ public class UserOnlineController {
     CommonState state;
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY)
+    @PostMapping(ControllerConstants.QUERY_UO)
     public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<UserOnlineInfoQueryVo> request){
         UserOnlineInfo userOnlineInfo = CommonUtils.copyProperties(request.getData(),UserOnlineInfo.class);
         List<UserOnlineInfo> onlineInfoList = userOnlineInfoService.queryByCondition(userOnlineInfo);
@@ -54,7 +52,7 @@ public class UserOnlineController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_ALL_ONLINE_USER)
+    @PostMapping(ControllerConstants.QUERY_ALL)
     public CommonResponse<List> queryAll(@RequestBody CommonRequest<UserOnlineInfoQueryVo> request){
         UserOnlineInfoDto userOnlineInfoDto = CommonUtils.copyProperties(request.getData(),UserOnlineInfoDto.class);
         userOnlineInfoDto.setJudgeId(CommonUtils.judgeCompanyAndOrg());
@@ -64,7 +62,7 @@ public class UserOnlineController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.KICK_USERS)
+    @PostMapping(ControllerConstants.OFFLINE)
     public CommonResponse<Boolean> kick(@RequestBody CommonRequest<List<Long>> request){
         loginService.logout(request.getData());
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);

@@ -19,7 +19,6 @@ import aaron.user.service.pojo.vo.DepartmentQueryVo;
 import aaron.user.service.pojo.vo.TreeListVo;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +33,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(ControllerConstants.DEPARTMENT)
+@CrossOrigin(allowedHeaders = "*",allowCredentials = "true",methods = {})
 public class DepartmentController {
     @Autowired
     DepartmentService departmentService;
@@ -42,7 +42,7 @@ public class DepartmentController {
     CommonState state;
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.SAVE)
+    @PostMapping(ControllerConstants.SAVE_D)
     public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<DepartmentItemVo> request){
         DepartmentDto departmentDto = CommonUtils.copyProperties(request.getData(),DepartmentDto.class);
         departmentService.save(departmentDto);
@@ -51,7 +51,7 @@ public class DepartmentController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE)
+    @PostMapping(ControllerConstants.UPDATE_D)
     public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<DepartmentItemVo> request){
         DepartmentDto departmentDto = CommonUtils.copyProperties(request.getData(),DepartmentDto.class);
         departmentDto.setOldVersion(departmentDto.getVersion());
@@ -60,7 +60,7 @@ public class DepartmentController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DELETE)
+    @PostMapping(ControllerConstants.DEL_D)
     public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<DepartmentItemVo>> request){
         List<DepartmentItemVo> itemVos = request.getData();
         List<DepartmentDto> departmentDtoList = CommonUtils.convertList(itemVos,DepartmentDto.class);
@@ -69,7 +69,7 @@ public class DepartmentController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_UPDATE_FORM)
+    @PostMapping(ControllerConstants.GET_UF_D)
     public CommonResponse<DepartmentListVo> getUpdateForm(@RequestBody CommonRequest<Long> request){
         Department department = departmentService.getById(request.getData());
         if (department == null){
@@ -80,7 +80,7 @@ public class DepartmentController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY)
+    @PostMapping(ControllerConstants.QUERY_D)
     public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<DepartmentQueryVo> request){
         Department department = CommonUtils.copyProperties(request.getData(),Department.class);
         department.setJudgeId(CommonUtils.judgeCompanyAndOrg());

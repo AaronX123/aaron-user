@@ -22,10 +22,7 @@ import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -40,6 +37,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping(ControllerConstants.USER)
+@CrossOrigin(allowedHeaders = "*",allowCredentials = "true",methods = {})
 public class UserController {
     @Autowired
     CacheManager cacheManager;
@@ -57,7 +55,7 @@ public class UserController {
     CommonState state;
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.SAVE)
+    @PostMapping(ControllerConstants.SAVE_U)
     public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<UserItemVo> request){
         UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
         userService.save(userDto);
@@ -65,7 +63,7 @@ public class UserController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE)
+    @PostMapping(ControllerConstants.UPDATE_U)
     public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<UserItemVo> request){
         UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
         userDto.setOldVersion(userDto.getVersion());
@@ -74,7 +72,7 @@ public class UserController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_UPDATE_FORM)
+    @PostMapping(ControllerConstants.GET_UF_U)
     public CommonResponse<UserListVo> getUpdateForm(@RequestBody @Valid CommonRequest<Long> request){
         User user = userService.getById(request.getData());
         UserListVo userListVo = CommonUtils.copyProperties(user,UserListVo.class);
@@ -82,7 +80,7 @@ public class UserController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DELETE)
+    @PostMapping(ControllerConstants.DEL_U)
     public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<UserItemVo>> request){
         List<UserDto> userDtoList = CommonUtils.convertList(request.getData(),UserDto.class);
         userService.delete(userDtoList);
@@ -90,7 +88,7 @@ public class UserController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY)
+    @PostMapping(ControllerConstants.QUERY_U)
     public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<UserQueryVo> request){
         UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
         userDto.setJudgeId(CommonUtils.judgeCompanyAndOrg());
@@ -102,7 +100,7 @@ public class UserController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_ROLE)
+    @PostMapping(ControllerConstants.GET_OPTIONS_U)
     public CommonResponse<Map> queryRole(){
         List<UserOptionsDto> userRole = roleService.queryRole();
         List<UserOptionsDto> userPosition = positionService.queryPosition();
@@ -113,7 +111,7 @@ public class UserController {
     }
 
 
-    @PostMapping(ControllerConstants.QUERY_USER_TREE)
+    @PostMapping(ControllerConstants.GET_LIST_U)
     public CommonResponse<List> queryUserTree(){
         List<TreeList> treeListDtoList = userService.getQueryListData(CommonUtils.judgeCompanyAndOrg());
         List<TreeListVo> treeListVos = CommonUtils.convertList(treeListDtoList,TreeListVo.class);
@@ -122,7 +120,7 @@ public class UserController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.ALLOC_ROLE_USER)
+    @PostMapping(ControllerConstants.ALLOC_USER)
     public CommonResponse<Boolean> allocRoleUser(@RequestBody @Valid CommonRequest<UserRoleDto> request){
         userService.addRoleForUser(request.getData());
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
