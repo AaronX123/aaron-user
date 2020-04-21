@@ -21,8 +21,8 @@ public interface UserOnlineInfoDao extends BaseMapper<UserOnlineInfo> {
      */
     @Select("<script>" +
             "SELECT a.id,a.user_id,a.code,a.name,ip,online_time,offline_time,stop_time,a.status " +
-            "FROM t_user_online_info a " +
-            "LEFT JOIN t_user b ON a.user_id = b.id " +
+            "FROM user_online_info a " +
+            "LEFT JOIN user b ON a.user_id = b.id " +
             "<where>" +
             "<if test=\"onlineTime!=null and onlineTime!=''\">" +
             "AND DATE(online_time) &lt; #{offlineTime} AND DATE(offline_time) &gt; #{onlineTime}" +

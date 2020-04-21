@@ -118,13 +118,15 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public boolean logout(List<Long> ids){
-        Cache cache = cacheManager.getCache(CacheConstants.USER_PERMISSION);
+        Cache cache = cacheManager.getCache(CacheConstants.TOKEN);
+        Cache resourceCache = cacheManager.getCache(CacheConstants.RESOURCE_MAP);
         for (Long id : ids) {
             Cache.ValueWrapper valueWrapper = cache.get(id);
             if (valueWrapper != null){
+                resourceCache.evict(id);
                 UserPermission userPermission;
                 try {
-                    userPermission = JwtUtil.parseJwt(String.valueOf(valueWrapper));
+                    userPermission = JwtUtil.parseJwt(String.valueOf(valueWrapper.get()));
                 } catch (Exception e) {
                     throw new UserException(StarterError.SYSTEM_TOKEN_PARSE_ERROR);
                 }

@@ -1,5 +1,6 @@
 package aaron.user.service.pojo.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -57,7 +58,7 @@ public class Department extends Model<Department> implements Serializable {
     /**
      * 上级部门名
      */
-    @Transient
+    @TableField(exist = false)
     private String parentDepartment;
     /**
      * 负责人
@@ -67,7 +68,7 @@ public class Department extends Model<Department> implements Serializable {
     /**
      * 部门描述
      */
-    private String description;
+    private String descript;
 
     /**
      * 状态
@@ -99,10 +100,10 @@ public class Department extends Model<Department> implements Serializable {
      */
     private Long version;
 
-    @Transient
+    @TableField(exist = false)
     private Long judgeId;
 
-    @Transient
+    @TableField(exist = false)
     private Long oldVersion;
 
     @Override

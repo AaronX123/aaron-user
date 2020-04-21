@@ -22,7 +22,7 @@ public interface SystemParamDao extends BaseMapper<SystemParam> {
      * 查询资源记录输出树
      * @return 以treelist集合形式返回数据生成树
      */
-    @Select("SELECT DISTINCT param_type AS name FROM t_system_param")
+    @Select("SELECT DISTINCT param_type AS name FROM system_param")
     List<TreeList> getQueryListData();
 
     /**
@@ -31,7 +31,7 @@ public interface SystemParamDao extends BaseMapper<SystemParam> {
      * @return 查询符合条件的参数记录集合
      */
     @Select("<script>" +
-            "SELECT * FROM t_system_param " +
+            "SELECT * FROM system_param " +
             "<where>" +
             "<if test=\"paramType!=null and paramType!=''\">" +
             "AND param_type = #{paramType}" +
@@ -45,7 +45,7 @@ public interface SystemParamDao extends BaseMapper<SystemParam> {
     List<SystemParam> query(SystemParam systemParam);
 
     @Update("<script>" +
-            "UPDATE t_system_param " +
+            "UPDATE system_param " +
             "SET id = #{id},org_id = #{orgId},param_type = #{paramType},param = #{param}, value = #{value}," +
             "status = #{status},created_by = #{createdBy},created_time = #{createdTime}," +
             "updated_by = #{updatedBy},updated_time = #{updatedTime},version = #{version} " +
@@ -61,7 +61,7 @@ public interface SystemParamDao extends BaseMapper<SystemParam> {
         public String batchDelete(Map map) {
             List<SystemParam> systemParams = (List<SystemParam>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM t_system_param WHERE ");
+            sb.append("DELETE FROM system_param WHERE ");
             for (int i = 0; i < systemParams.size(); i++) {
                 sb.append("(id = ").append(systemParams.get(i).getId()).append(" AND ")
                         .append("version = ").append(systemParams.get(i).getVersion()).append(")");

@@ -23,4 +23,6 @@ public interface ResourceService extends IService<Resource> {
     List<Resource> list(ResourceDto resourceDto);
 
     List<TreeListDto> getQueryList();
+
+    List<Resource> listByIdList(List<Long> idList);
 }

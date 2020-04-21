@@ -20,7 +20,9 @@ public interface CompanyService extends IService<Company> {
 
     List<Company> queryCompany(CompanyDto companyDto);
 
-    List<TreeListDto> getCompanyTree(long id);
+    List<TreeListDto> getCompanyTree(Long id);
 
     String getNameById(long id);
+
+
 }

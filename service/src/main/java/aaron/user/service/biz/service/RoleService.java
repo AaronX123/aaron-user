@@ -51,4 +51,5 @@ public interface RoleService extends IService<Role> {
      * @return 角色集合
      */
     List<UserOptionsDto> queryRole();
+
 }

@@ -15,11 +15,19 @@ import java.util.Map;
  */
 @Mapper
 public interface ResourceDao extends BaseMapper<Resource> {
+    @Select("<script>" +
+            "SELECT * FROM resource WHERE id IN " +
+            "<foreach collection=\"ids\" item=\"id\" separator=\",\" close=\")\" open=\"(\">\n" +
+            "            #{id}\n" +
+            "        </foreach>" +
+            "</script>")
+    List<Resource> listByIdList(@Param("ids") List<Long> ids);
+
     /**
      * 查询资源记录输出树
      * @return 以treelist集合形式返回数据生成树
      */
-    @Select("SELECT id,name,parent_id,version FROM t_resource")
+    @Select("SELECT id,name,parent_id,version FROM resource")
     List<TreeList> getQueryListData();
 
     /**
@@ -28,10 +36,10 @@ public interface ResourceDao extends BaseMapper<Resource> {
      * @return 查询符合条件的资源记录集合
      */
     @Select("<script>" +
-            "SELECT * FROM t_resource " +
+            "SELECT * FROM resource " +
             "<where>" +
             "<if test=\"id!=null and id!=''\">" +
-            "AND id = #{id} UNION SELECT * FROM t_resource WHERE parent_id = #{id}" +
+            "AND id = #{id} UNION SELECT * FROM resource WHERE parent_id = #{id}" +
             "</if>" +
             "</where>" +
             "ORDER BY id DESC" +
@@ -43,7 +51,7 @@ public interface ResourceDao extends BaseMapper<Resource> {
      * @param resource 资源更新信息
      * @return 是否更新成功
      */
-    @Update("UPDATE t_resource SET name = #{name},code = #{code},parent_id = #{parentId},url = #{url}," +
+    @Update("UPDATE resource SET name = #{name},code = #{code},parent_id = #{parentId},url = #{url}," +
             "open_img = #{openImg},close_img = #{closeImg},resource_type = #{resourceType},leaf = #{leaf}," +
             "updated_by = #{updatedBy},updated_time = #{updatedTime},version = #{version} \n" +
             "WHERE id = #{id} AND version = #{oldVersion}")
@@ -56,14 +64,14 @@ public interface ResourceDao extends BaseMapper<Resource> {
     @SelectProvider(type = ResourceProvider.class, method = "batchSelect")
     int getLeafCount(List<Resource> resource);
 
-    @Delete("DELETE FROM t_resource WHERE id = #{id} AND version = #{version} ")
+    @Delete("DELETE FROM resource WHERE id = #{id} AND version = #{version} ")
     int deleteById(Resource resource);
 
     @DeleteProvider(type = ResourceProvider.class, method = "batchDelete")
     int deleteByIdList(List<Resource> resources);
 
     @Select("<script>" +
-            " SELECT id, resource_type FROM t_resource WHERE id IN\n" +
+            " SELECT id, resource_type FROM resource WHERE id IN\n" +
             "        <foreach collection=\"idList\" index=\"i\" item=\"id\" open=\"(\" close=\")\" separator=\",\">\n" +
             "            #{id}\n" +
             "        </foreach>"+
@@ -75,7 +83,7 @@ public interface ResourceDao extends BaseMapper<Resource> {
         public String batchSelect(Map map) {
             List<Resource> resources = (List<Resource>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("SELECT count(id) FROM t_resource WHERE ");
+            sb.append("SELECT count(id) FROM resource WHERE ");
             for (int i = 0; i < resources.size(); i++) {
                 sb.append("parent_id = ").append(resources.get(i).getId());
                 if (i != resources.size()-1) {
@@ -88,7 +96,7 @@ public interface ResourceDao extends BaseMapper<Resource> {
         public String batchDelete(Map map) {
             List<Resource> resources = (List<Resource>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM t_resource WHERE ");
+            sb.append("DELETE FROM resource WHERE ");
             for (int i = 0; i < resources.size(); i++) {
                 sb.append("(id = ").append(resources.get(i).getId()).append(" AND ")
                         .append("version = ").append(resources.get(i).getVersion()).append(")");

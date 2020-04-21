@@ -20,7 +20,7 @@ public interface OrganizationDao extends BaseMapper<Organization> {
      * @return 查询符合条件的组织机构记录集合
      */
     @Select("<script>" +
-            "SELECT * FROM t_organization " +
+            "SELECT * FROM organization " +
             "<where>" +
             "<if test=\"name!=null and name!=''\">" +
             "AND name LIKE CONCAT(#{name},'%')" +

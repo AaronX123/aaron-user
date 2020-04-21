@@ -42,7 +42,7 @@ public class UserOnlineController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.QUERY_UO)
-    public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<UserOnlineInfoQueryVo> request){
+    public CommonResponse<Map> queryUserOnline(@RequestBody @Valid CommonRequest<UserOnlineInfoQueryVo> request){
         UserOnlineInfo userOnlineInfo = CommonUtils.copyProperties(request.getData(),UserOnlineInfo.class);
         List<UserOnlineInfo> onlineInfoList = userOnlineInfoService.queryByCondition(userOnlineInfo);
         Page<UserOnlineInfoListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
@@ -53,7 +53,7 @@ public class UserOnlineController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.QUERY_ALL)
-    public CommonResponse<List> queryAll(@RequestBody CommonRequest<UserOnlineInfoQueryVo> request){
+    public CommonResponse<List> queryAllUserOnline(@RequestBody CommonRequest<UserOnlineInfoQueryVo> request){
         UserOnlineInfoDto userOnlineInfoDto = CommonUtils.copyProperties(request.getData(),UserOnlineInfoDto.class);
         userOnlineInfoDto.setJudgeId(CommonUtils.judgeCompanyAndOrg());
         List<UserOnlineInfoDto> userOnlineInfoDtoList = userOnlineInfoService.queryAllByCondition(userOnlineInfoDto);

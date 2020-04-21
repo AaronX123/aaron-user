@@ -21,12 +21,19 @@ public interface PositionDao extends BaseMapper<Position> {
      * 查询职位集合
      * @return 职位集合
      */
-    @Select("SELECT id AS positionId,name AS positionName,company_id FROM t_position ORDER BY LENGTH(name)")
+    @Select("SELECT id AS positionId,name AS positionName,company_id FROM position ORDER BY LENGTH(name)")
     List<UserOptionsDto> queryPosition();
 
+    @Select("<script>" +
+            "SELECT * FROM position WHERE company_id IN " +
+            "<foreach collection=\"ids\" item=\"id\" separator=\",\" close=\")\" open=\"(\">\n" +
+            "            #{id}\n" +
+            "        </foreach>" +
+            "</script>")
+    List<Position> listByCompanyId(@Param("ids") List<Long> ids);
 
     @Update("<script>" +
-            "UPDATE t_position " +
+            "UPDATE position " +
             "SET id = #{id},company_id = #{companyId},name = #{name},code = #{code},remark = #{remark}," +
             "status = #{status},created_by = #{createdBy},created_time = #{createdTime}," +
             "updated_by = #{updatedBy},updated_time = #{updatedTime},version = #{version} " +
@@ -41,11 +48,11 @@ public interface PositionDao extends BaseMapper<Position> {
     @SelectProvider(type = PositionProvider.class, method = "batchSelect")
     int getLeafCount(List<Position> position);
 
-    @Select("SELECT id AS companyId,name AS companyName FROM t_company")
+    @Select("SELECT id AS companyId,name AS companyName FROM company")
     List<Position> queryOptions();
 
     @Delete("<script>" +
-            "DELETE FROM t_position WHERE id = #{id} AND version = #{version} " +
+            "DELETE FROM position WHERE id = #{id} AND version = #{version} " +
             "<if test=\"judgeId!=null and judgeId!=''\">" +
             "AND company_id = #{judgeId}" +
             "</if>" +
@@ -60,7 +67,7 @@ public interface PositionDao extends BaseMapper<Position> {
         public String batchSelect(Map map) {
             List<Position> positions = (List<Position>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("SELECT count(id) FROM t_user WHERE ");
+            sb.append("SELECT count(id) FROM user WHERE ");
             for (int i = 0; i < positions.size(); i++) {
                 sb.append("position_id = ").append(positions.get(i).getId());
                 if (i != positions.size()-1) {
@@ -73,7 +80,7 @@ public interface PositionDao extends BaseMapper<Position> {
         public String batchDelete(Map map) {
             List<Position> positionList = (List<Position>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM t_position WHERE ");
+            sb.append("DELETE FROM position WHERE ");
             for (int i = 0; i < positionList.size(); i++) {
                 sb.append("(id = ").append(positionList.get(i).getId()).append(" AND ")
                         .append("version = ").append(positionList.get(i).getVersion());
@@ -96,8 +103,8 @@ public interface PositionDao extends BaseMapper<Position> {
      * @return 查询符合条件的角色记录集合
      */
     @Select("<script>" +
-            "SELECT a.*,b.name AS companyName FROM t_position a " +
-            "LEFT JOIN t_company b ON a.company_id = b.id " +
+            "SELECT a.*,b.name AS companyName FROM position a " +
+            "LEFT JOIN company b ON a.company_id = b.id " +
             "<where>" +
             "<if test=\"name!=null and name!=''\">" +
             "AND a.name LIKE CONCAT(#{name},'%')" +

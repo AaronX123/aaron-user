@@ -15,11 +15,24 @@ import java.util.Map;
  */
 @Mapper
 public interface RoleDao extends BaseMapper<Role> {
+
+
+    @Delete("DELETE FROM role WHERE id = #{id}")
+    boolean delete(long id);
+
+
+    @Delete("<script>" +
+            "DELETE FROM role WHERE id IN" +
+            "<foreach collection=\"ids\" item=\"id\" separator=\",\" close=\")\" open=\"(\">" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    boolean batchDeleteById(@Param("ids") List<Long> id);
     /**
      * 查询角色
      * @return 所拥有的角色集合
      */
-    @Select("SELECT id AS roleId,name AS roleName,company_id FROM t_role ORDER BY LENGTH(name) ")
+    @Select("SELECT id AS roleId,name AS roleName,company_id FROM role ORDER BY LENGTH(name) ")
     List<UserOptionsDto> queryRole();
 
     /**
@@ -27,7 +40,7 @@ public interface RoleDao extends BaseMapper<Role> {
      * @param role 角色
      * @return 角色对应的资源集合
      */
-    @Select("SELECT a.id,a.name,a.parent_id,a.version from t_resource a,t_role_resource b where b.role_id = #{id} and a.id = b.resource_id and b.type = 0")
+    @Select("SELECT a.id,a.name,a.parent_id,a.version from resource a,role_resource b where b.role_id = #{id} and a.id = b.resource_id and b.type = 0")
     List<TreeList> queryResourceForRole(Role role);
 
     /**
@@ -38,18 +51,18 @@ public interface RoleDao extends BaseMapper<Role> {
     @Select("<script>" +
             "SELECT e.id,e.code,e.name,e.roleName,e.departmentName,e.positionName,f.flag FROM " +
             "(SELECT a.id,a.code,a.name,GROUP_CONCAT(b.name SEPARATOR ',') AS roleName,c.name AS departmentName,d.name AS positionName " +
-            "FROM t_user a " +
-            "LEFT JOIN t_user_role e ON a.id = e.user_id " +
-            "LEFT JOIN t_role b ON e.role_id = b.id " +
-            "LEFT JOIN t_department c ON c.id = a.department_id " +
-            "LEFT JOIN t_position d ON d.id = a.position_id " +
+            "FROM user a " +
+            "LEFT JOIN user_role e ON a.id = e.user_id " +
+            "LEFT JOIN role b ON e.role_id = b.id " +
+            "LEFT JOIN department c ON c.id = a.department_id " +
+            "LEFT JOIN position d ON d.id = a.position_id " +
             "WHERE (b.company_id = #{judgeId} or b.org_id = #{judgeId}) " +
             "<if test=\"companyId!=null and companyId!=''\">" +
             "AND a.company_id = #{companyId} " +
             "</if>" +
             "GROUP BY a.id ORDER BY a.updated_time DESC) e " +
             "LEFT JOIN (SELECT user_id,CONCAT(user_id) as flag " +
-            "FROM t_user_role " +
+            "FROM user_role " +
             "WHERE role_id = #{id}) f " +
             "ON e.id = f.user_id" +
             "<where>" +
@@ -63,13 +76,32 @@ public interface RoleDao extends BaseMapper<Role> {
             "</script>")
     List<UserForRole> queryUserForRole(Role role);
 
+
+
+    /**
+     * 查询角色所拥有的资源
+     * @return 角色对应的资源集合
+     */
+    @Select("<script>" +
+            "SELECT e.id,e.code,e.name,e.roleName,e.departmentName,e.positionName,f.flag FROM " +
+            "(SELECT a.id,a.code,a.name,GROUP_CONCAT(b.name SEPARATOR ',') AS roleName,c.name AS departmentName,d.name AS positionName " +
+            "FROM user a " +
+            "LEFT JOIN user_role e ON a.id = e.user_id " +
+            "LEFT JOIN role b ON e.role_id = b.id " +
+            "LEFT JOIN department c ON c.id = a.department_id " +
+            "LEFT JOIN position d ON d.id = a.position_id " +
+            "GROUP BY a.id ORDER BY a.updated_time DESC) e " +
+            "LEFT JOIN (SELECT user_id,CONCAT(user_id) as flag " +
+            "FROM user_role) f ON e.id = f.user_id " +
+            "</script>")
+    List<UserForRole> queryUserForRoleSP();
     /**
      * 删除角色资源
-     * @param roleResource 角色资源
+     * @param roleId 角色资源
      * @return 删除条数
      */
-    @Delete("DELETE FROM t_role_resource where role_id = #{roleId}")
-    boolean deleteResourceForRole(RoleResource roleResource);
+    @Delete("DELETE FROM role_resource where role_id = #{roleId}")
+    boolean deleteResourceForRole(@Param("roleId") long roleId);
 
     /**
      * 插入用户角色
@@ -77,7 +109,7 @@ public interface RoleDao extends BaseMapper<Role> {
      * @return 插入条数
      */
     @Insert("<script>" +
-            "INSERT INTO t_user_role (id,role_id,user_id) VALUES (#{id},#{roleId},#{userId}) " +
+            "INSERT INTO user_role (id,role_id,user_id) VALUES (#{id},#{roleId},#{userId}) " +
             "</script>")
     int insertUserForRole(RoleUser roleUser);
 
@@ -86,7 +118,7 @@ public interface RoleDao extends BaseMapper<Role> {
      * @param roleUser 用户角色
      * @return 删除条数
      */
-    @Delete("DELETE FROM t_user_role where role_id = #{roleId}")
+    @Delete("DELETE FROM user_role where role_id = #{roleId}")
     boolean deleteUserForRole(RoleUser roleUser);
 
     /**
@@ -95,9 +127,9 @@ public interface RoleDao extends BaseMapper<Role> {
      * @return 查询符合条件的角色记录集合
      */
     @Select("<script>" +
-            "SELECT a.*,b.name AS orgName,c.name AS companyName FROM t_role a " +
-            "LEFT JOIN t_organization b ON a.org_id = b.id " +
-            "LEFT JOIN t_company c ON a.company_id = c.id " +
+            "SELECT a.*,b.name AS orgName,c.name AS companyName FROM role a " +
+            "LEFT JOIN organization b ON a.org_id = b.id " +
+            "LEFT JOIN company c ON a.company_id = c.id " +
             "<where>" +
             "<if test=\"name!=null and name!=''\">" +
             "AND a.name LIKE CONCAT(#{name},'%')" +
@@ -114,7 +146,7 @@ public interface RoleDao extends BaseMapper<Role> {
      * @return 更新成功记录数
      */
     @Update("<script>" +
-            "UPDATE t_role " +
+            "UPDATE role " +
             "SET id = #{id},company_id = #{companyId},org_id = #{orgId},name = #{name},code = #{code}, remark = #{remark}," +
             "status = #{status},created_by = #{createdBy},created_time = #{createdTime}," +
             "updated_by = #{updatedBy},updated_time = #{updatedTime},version = #{version} " +
@@ -124,14 +156,25 @@ public interface RoleDao extends BaseMapper<Role> {
     int update(Role role);
 
     @Delete("<script>" +
-            "DELETE FROM t_role " +
+            "DELETE FROM role " +
             "WHERE id = #{id} AND version = #{version} " +
             "AND (id = #{judgeId} OR org_id = #{judgeId})" +
             "</script>")
     int deleteById(Role role);
 
-    @SelectProvider(type = RoleProvider.class, method = "batchSelect")
-    int selectByIdList(List<Role> roles);
+    /**
+     * 查询是否有人在使用些角色
+     * @param ids
+     * @return
+     */
+//    @SelectProvider(type = RoleProvider.class, method = "batchSelect")
+    @Select("<script>" +
+            "SELECT * FROM user_role WHERE role_id IN" +
+            "<foreach collection=\"ids\" item=\"id\" separator=\",\" close=\")\" open=\"(\">" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<UserRole> selectByIdList(@Param("ids") List<Long> ids);
 
     @DeleteProvider(type = RoleProvider.class, method = "batchDelete")
     int deleteByIdList(List<Role> roles);
@@ -141,7 +184,7 @@ public interface RoleDao extends BaseMapper<Role> {
         public String batchSelect(Map map) {
             List<Role> roles = (List<Role>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("SELECT count(id) FROM t_user_role WHERE ");
+            sb.append("SELECT count(id) FROM user_role WHERE ");
             for (int i = 0; i < roles.size(); i++) {
                 sb.append("role_id = ").append(roles.get(i).getId());
                 if (i != roles.size()-1) {
@@ -154,7 +197,7 @@ public interface RoleDao extends BaseMapper<Role> {
         public String batchDelete(Map map) {
             List<Role> roles = (List<Role>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM t_department WHERE ");
+            sb.append("DELETE FROM department WHERE ");
             for (int i = 0; i < roles.size(); i++) {
                 sb.append("(id = ").append(roles.get(i).getId()).append(" AND ")
                         .append("version = ").append(roles.get(i).getVersion()).append(" AND ")

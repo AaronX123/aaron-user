@@ -40,15 +40,15 @@ public class PositionController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.SAVE_P)
-    public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<PositionItemVo> request){
+    public CommonResponse<Boolean> savePosition(@RequestBody @Valid CommonRequest<PositionItemVo> request){
         PositionDto positionDto = CommonUtils.copyProperties(request.getData(),PositionDto.class);
         positionService.save(positionDto);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE_P)
-    public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<PositionItemVo> request){
+    @PutMapping(ControllerConstants.UPDATE_P)
+    public CommonResponse<Boolean> updatePosition(@RequestBody @Valid CommonRequest<PositionItemVo> request){
         PositionDto positionDto = CommonUtils.copyProperties(request.getData(),PositionDto.class);
         positionDto.setOldVersion(positionDto.getVersion());
         positionService.update(positionDto);
@@ -56,8 +56,8 @@ public class PositionController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DEL_P)
-    public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<PositionItemVo>> request){
+    @DeleteMapping(ControllerConstants.DEL_P)
+    public CommonResponse<Boolean> deletePosition(@RequestBody @Valid CommonRequest<List<PositionItemVo>> request){
         List<Position> positionList = CommonUtils.convertList(request.getData(),Position.class);
         positionService.delete(positionList);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
@@ -65,7 +65,7 @@ public class PositionController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.GET_UF_P)
-    public CommonResponse<PositionListVo> getUpdateForm(@RequestBody @Valid CommonRequest<Long> request){
+    public CommonResponse<PositionListVo> getUpdateFormPosition(@RequestBody @Valid CommonRequest<Long> request){
         Position position = positionService.getById(request.getData());
         PositionListVo positionListVo = CommonUtils.copyProperties(position,PositionListVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,positionListVo);
@@ -73,7 +73,7 @@ public class PositionController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.QUERY_P)
-    public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<PositionQueryVo> request){
+    public CommonResponse<Map> queryPosition(@RequestBody @Valid CommonRequest<PositionQueryVo> request){
         Position position = CommonUtils.copyProperties(request.getData(),Position.class);
         position.setJudgeId(CommonUtils.judgeCompanyAndOrg());
         Page<PositionListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
@@ -84,8 +84,8 @@ public class PositionController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_OPTIONS_P)
-    public CommonResponse<List> queryCompOptions(){
+    @GetMapping(ControllerConstants.QUERY_OPTIONS_P)
+    public CommonResponse<List> queryCompOptionsPosition(){
         List<Position> positionList = positionService.listCompany();
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,CommonUtils.convertList(positionList,PositionListVo.class));
     }

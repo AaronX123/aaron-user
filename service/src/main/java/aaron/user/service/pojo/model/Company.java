@@ -1,5 +1,6 @@
 package aaron.user.service.pojo.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -70,7 +71,7 @@ public class Company extends Model<Company> implements Serializable {
      * 非表对应字段
      * 所属机构
      */
-    @Transient
+    @TableField(exist = false)
     private String orgName;
 
     /**
@@ -113,7 +114,7 @@ public class Company extends Model<Company> implements Serializable {
      */
     private Long version;
 
-    @Transient
+    @TableField(exist = false)
     private Long judgeId;
 
     @Override

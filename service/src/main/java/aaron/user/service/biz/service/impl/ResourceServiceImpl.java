@@ -68,5 +68,10 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceDao, Resource> impl
         List<TreeList> resourceList = baseMapper.getQueryListData();
         return CommonUtils.convertList(resourceList,TreeListDto.class);
     }
+
+    @Override
+    public List<Resource> listByIdList(List<Long> idList) {
+        return baseMapper.listByIdList(idList);
+    }
 }
 

@@ -21,7 +21,12 @@ import java.util.Map;
  */
 @Mapper
 public interface UserDao extends BaseMapper<User> {
-    @Select("SELECT id FROM t_user WHERE name = #{userName} ")
+
+    @Delete("DELETE FROM user WHERE id = #{id}")
+    boolean delById(long id);
+
+
+    @Select("SELECT id FROM user WHERE name = #{userName} ")
     Long selectIdByName(String userName);
     /**
      * 查询角色为阅卷官的用户
@@ -30,7 +35,7 @@ public interface UserDao extends BaseMapper<User> {
      */
     @Select("<script>" +
             "SELECT a.id,a.name " +
-            "FROM t_user a,t_role b,t_user_role c " +
+            "FROM user a,role b,user_role c " +
             "WHERE a.id = c.user_id AND b.id = c.role_id AND b.name = '阅卷官' " +
             "<if test=\"name!=null and name!=''\">" +
             "AND a.name LIKE CONCAT(#{name},'%')" +
@@ -49,12 +54,12 @@ public interface UserDao extends BaseMapper<User> {
      */
     @Select("<script>" +
             "SELECT a.id,a.code,a.password,a.name,a.sex,a.birthday,a.tel,a.email,a.other,a.remark,a.status,b.name AS positionName,GROUP_CONCAT(d.name SEPARATOR ',') AS roleName,c.name AS departmentName,f.name AS companyName,a.version " +
-            "FROM t_user a " +
-            "LEFT JOIN t_position b ON a.position_id = b.id " +
-            "LEFT JOIN t_department c ON a.department_id = c.id " +
-            "LEFT JOIN t_user_role e ON a.id = e.user_id " +
-            "LEFT JOIN t_role d ON e.role_id = d.id " +
-            "LEFT JOIN t_company f ON a.company_id = f.id " +
+            "FROM user a " +
+            "LEFT JOIN position b ON a.position_id = b.id " +
+            "LEFT JOIN department c ON a.department_id = c.id " +
+            "LEFT JOIN user_role e ON a.id = e.user_id " +
+            "LEFT JOIN role d ON e.role_id = d.id " +
+            "LEFT JOIN company f ON a.company_id = f.id " +
             "<where>" +
             "<if test=\"name!=null and name!=''\">" +
             "AND a.name LIKE CONCAT(#{name},'%')" +
@@ -76,16 +81,16 @@ public interface UserDao extends BaseMapper<User> {
             "</script>")
     List<User> query(User user);
 
-    @Select("SELECT DISTINCT a.id,a.code,a.name AS userName,a.company_id,c.org_id FROM t_user a,t_user_role b,t_role c " +
+    @Select("SELECT DISTINCT a.id,a.code,a.name AS userName,a.company_id,c.org_id FROM user a,user_role b,role c " +
             "where a.code = #{code} and a.password = #{password} and a.id = b.user_id and b.role_id = c.id")
     UserPermission checkUser(User user);
 
 
-    @Select("select id,name,profile_picture,company_id from t_user where id = #{id} ")
+    @Select("select id,name,profile_picture,company_id from user where id = #{id} ")
     UserInfo getUserInfo(UserPermission userPermission);
 
     @Select("SELECT distinct d.id,d.name,d.code,d.parent_id,d.url,d.open_img,d.close_img,d.resource_type " +
-            "FROM t_role_resource a,t_user_role b,t_user c,t_resource d " +
+            "FROM role_resource a,user_role b,user c,resource d " +
             "WHERE a.role_id = b.role_id AND b.user_id = c.id AND d.id = a.resource_id AND c.id = #{id} " +
             "ORDER BY id")
     List<UserMenu> getUserMenu(UserPermission userPermission);
@@ -96,7 +101,7 @@ public interface UserDao extends BaseMapper<User> {
      * @return 删除条数
      */
     @Delete("<script>" +
-            "DELETE FROM t_user_role WHERE user_id = #{id} " +
+            "DELETE FROM user_role WHERE user_id = #{id} " +
             "</script>")
     int deleteRole(Long id);
 
@@ -108,7 +113,7 @@ public interface UserDao extends BaseMapper<User> {
         public String batchDelete(Map map) {
             List<User> userList = (List<User>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM t_user_role WHERE ");
+            sb.append("DELETE FROM user_role WHERE ");
             for (int i = 0; i < userList.size(); i++) {
                 sb.append("(user_id = ").append(userList.get(i).getId()).append(")");
                 if (i != userList.size()-1) {
@@ -125,19 +130,19 @@ public interface UserDao extends BaseMapper<User> {
      * @return treelist记录
      */
     @Select("<script>" +
-            "SELECT id,name,company_id AS parent_id,company_id AS root_id,version from t_department " +
+            "SELECT id,name,company_id AS parent_id,company_id AS root_id,version from department " +
             "WHERE level = '1' " +
             "<if test=\"_parameter!=null and _parameter!=''\">" +
             "AND company_id = #{_parameter} " +
             "</if>" +
             "UNION  " +
-            "SELECT id,name,parent_id,company_id AS root_id,version from t_department " +
+            "SELECT id,name,parent_id,company_id AS root_id,version from department " +
             "WHERE level != '1' " +
             "<if test=\"_parameter!=null and _parameter!=''\">" +
             "AND company_id = #{_parameter} " +
             "</if>" +
             "UNION  " +
-            "SELECT id,name,null AS parent_id,id AS root_id,version FROM t_company " +
+            "SELECT id,name,null AS parent_id,id AS root_id,version FROM company " +
             "<where>" +
             "<if test=\"_parameter!=null and _parameter!=''\">" +
             "id = #{_parameter} " +

@@ -56,15 +56,15 @@ public class UserController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.SAVE_U)
-    public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<UserItemVo> request){
+    public CommonResponse<Boolean> saveUser(@RequestBody @Valid CommonRequest<UserItemVo> request){
         UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
         userService.save(userDto);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE_U)
-    public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<UserItemVo> request){
+    @PutMapping(ControllerConstants.UPDATE_U)
+    public CommonResponse<Boolean> updateUser(@RequestBody @Valid CommonRequest<UserItemVo> request){
         UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
         userDto.setOldVersion(userDto.getVersion());
         userService.update(userDto);
@@ -73,15 +73,15 @@ public class UserController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.GET_UF_U)
-    public CommonResponse<UserListVo> getUpdateForm(@RequestBody @Valid CommonRequest<Long> request){
+    public CommonResponse<UserListVo> getUpdateFormUser(@RequestBody @Valid CommonRequest<Long> request){
         User user = userService.getById(request.getData());
         UserListVo userListVo = CommonUtils.copyProperties(user,UserListVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,userListVo);
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DEL_U)
-    public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<UserItemVo>> request){
+    @DeleteMapping(ControllerConstants.DEL_U)
+    public CommonResponse<Boolean> deleteUser(@RequestBody @Valid CommonRequest<List<UserItemVo>> request){
         List<UserDto> userDtoList = CommonUtils.convertList(request.getData(),UserDto.class);
         userService.delete(userDtoList);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
@@ -89,7 +89,7 @@ public class UserController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.QUERY_U)
-    public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<UserQueryVo> request){
+    public CommonResponse<Map> queryUser(@RequestBody @Valid CommonRequest<UserQueryVo> request){
         UserDto userDto = CommonUtils.copyProperties(request.getData(),UserDto.class);
         userDto.setJudgeId(CommonUtils.judgeCompanyAndOrg());
         Page<UserListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
@@ -100,8 +100,8 @@ public class UserController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.GET_OPTIONS_U)
-    public CommonResponse<Map> queryRole(){
+    @GetMapping(ControllerConstants.GET_OPTIONS_U)
+    public CommonResponse<Map> queryRoleUser(){
         List<UserOptionsDto> userRole = roleService.queryRole();
         List<UserOptionsDto> userPosition = positionService.queryPosition();
         Map<String,List> map = new HashMap<>(2);
@@ -110,8 +110,8 @@ public class UserController {
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,map);
     }
 
-
-    @PostMapping(ControllerConstants.GET_LIST_U)
+    @MethodEnhancer
+    @GetMapping(ControllerConstants.GET_LIST_U)
     public CommonResponse<List> queryUserTree(){
         List<TreeList> treeListDtoList = userService.getQueryListData(CommonUtils.judgeCompanyAndOrg());
         List<TreeListVo> treeListVos = CommonUtils.convertList(treeListDtoList,TreeListVo.class);

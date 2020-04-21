@@ -1,6 +1,7 @@
 package aaron.user.service.pojo.vo;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author LH
@@ -45,6 +46,20 @@ public class RoleResourceVo implements Serializable {
 
     public void setType(Byte type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoleResourceVo that = (RoleResourceVo) o;
+        return Objects.equals(roleId, that.roleId) &&
+                Objects.equals(resourceId, that.resourceId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roleId, resourceId);
     }
 
     @Override

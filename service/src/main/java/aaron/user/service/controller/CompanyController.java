@@ -44,15 +44,15 @@ public class CompanyController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.SAVE_C)
-    public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<CompanyItemVo> request){
+    public CommonResponse<Boolean> saveCompany(@RequestBody @Valid CommonRequest<CompanyItemVo> request){
         CompanyDto dto = CommonUtils.copyProperties(request.getData(),CompanyDto.class);
         companyService.save(dto);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DELETE_C)
-    public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<CompanyItemVo>> request){
+    @DeleteMapping(ControllerConstants.DELETE_C)
+    public CommonResponse<Boolean> deleteCompany(@RequestBody @Valid CommonRequest<List<CompanyItemVo>> request){
         List<CompanyItemVo> itemVoList = request.getData();
         List<Long> idList = itemVoList.stream().map(CompanyItemVo::getId).collect(Collectors.toList());
         companyService.removeByIds(idList);
@@ -60,8 +60,8 @@ public class CompanyController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE_C)
-    public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<CompanyItemVo> request){
+    @PutMapping(ControllerConstants.UPDATE_C)
+    public CommonResponse<Boolean> updateCompany(@RequestBody @Valid CommonRequest<CompanyItemVo> request){
         CompanyDto dto = CommonUtils.copyProperties(request.getData(),CompanyDto.class);
         dto.setOldVersion(request.getData().getVersion());
         companyService.update(dto);
@@ -70,7 +70,7 @@ public class CompanyController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.GET_UPDATE_FORM_C)
-    public CommonResponse<CompanyListVo> getUpdateForm(@RequestBody @Valid CommonRequest<Long> request){
+    public CommonResponse<CompanyListVo> getUpdateFormCompany(@RequestBody @Valid CommonRequest<Long> request){
         Company company = companyService.getById(request.getData());
         if (company == null){
             throw new UserException(UserError.DATA_NOT_EXIST);
@@ -81,7 +81,7 @@ public class CompanyController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.QUERY_C)
-    public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<CompanyQueryVo> request){
+    public CommonResponse<Map> queryCompany(@RequestBody @Valid CommonRequest<CompanyQueryVo> request){
         CompanyDto dto = CommonUtils.copyProperties(request.getData(),CompanyDto.class);
         dto.setJudgeId(CommonUtils.judgeCompanyAndOrg());
         Page<CompanyListVo> page = PageHelper.startPage(dto.getCurrentPage(),dto.getPageSize());
@@ -91,9 +91,10 @@ public class CompanyController {
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,map);
     }
 
-    @PostMapping(ControllerConstants.GET_COMPANY_LIST)
+    @MethodEnhancer
+    @GetMapping(ControllerConstants.GET_COMPANY_LIST)
     public CommonResponse<List> getCompanyList(){
-        long judgeId = CommonUtils.judgeCompanyAndOrg();
+        Long judgeId = CommonUtils.judgeCompanyAndOrg();
         List<TreeListDto> dtoList = companyService.getCompanyTree(judgeId);
         List<TreeListVo> voList = CommonUtils.convertList(dtoList,TreeListVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,voList);

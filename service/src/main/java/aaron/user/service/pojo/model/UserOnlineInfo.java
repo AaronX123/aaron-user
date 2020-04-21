@@ -1,5 +1,6 @@
 package aaron.user.service.pojo.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -64,10 +65,10 @@ public class UserOnlineInfo extends Model<UserOnlineInfo> implements Serializabl
      */
     private Byte status;
 
-    @Transient
+    @TableField(exist = false)
     private Long judgeId;
 
-    @Transient
+    @TableField(exist = false)
     private Long oldVersion;
 
 

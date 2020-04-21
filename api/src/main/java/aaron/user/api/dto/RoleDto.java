@@ -3,6 +3,10 @@ package aaron.user.api.dto;
 import aaron.common.data.common.BaseDto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,6 +15,10 @@ import java.util.List;
  * t_role
  * @author
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoleDto extends BaseDto implements Serializable {
     private static final long serialVersionUID = 7246277876403033644L;
     /**

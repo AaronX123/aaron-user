@@ -5,6 +5,7 @@ import aaron.common.utils.TokenUtils;
 import aaron.user.api.dto.UserOnlineInfoDto;
 import aaron.user.service.biz.dao.UserOnlineInfoDao;
 import aaron.user.service.biz.service.UserOnlineInfoService;
+import aaron.user.service.common.utils.AdminUtil;
 import aaron.user.service.pojo.model.UserOnlineInfo;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ import java.util.List;
 public class UserOnlineInfoServiceImpl extends ServiceImpl<UserOnlineInfoDao, UserOnlineInfo> implements UserOnlineInfoService {
     @Override
     public List<UserOnlineInfo> queryByCondition(UserOnlineInfo userOnlineInfo) {
+        if (AdminUtil.isSuperAdmin()){
+            return list();
+        }
         if (CommonUtils.judgeCompanyAndOrg().equals(TokenUtils.getUser().getOrgId())){
             userOnlineInfo.setJudgeId(null);
         }else {

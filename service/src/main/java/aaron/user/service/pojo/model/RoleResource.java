@@ -19,6 +19,16 @@ public class RoleResource extends Model<RoleResource> implements Serializable {
     private Long resourceId;
     private Byte type;
 
+    public RoleResource() {
+    }
+
+    public RoleResource(Long id, Long roleId, Long resourceId, Byte type) {
+        this.id = id;
+        this.roleId = roleId;
+        this.resourceId = resourceId;
+        this.type = type;
+    }
+
     @Override
     protected Serializable pkVal() {
         return id;

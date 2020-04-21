@@ -4,20 +4,24 @@ import aaron.common.aop.annotation.FullCommonFieldU;
 import aaron.common.aop.enums.EnumOperation;
 import aaron.common.utils.CommonUtils;
 import aaron.common.utils.SnowFlake;
+import aaron.common.utils.TokenUtils;
 import aaron.user.api.dto.*;
 import aaron.user.service.biz.dao.RoleDao;
 import aaron.user.service.biz.service.RoleResourceService;
 import aaron.user.service.biz.service.RoleService;
+import aaron.user.service.biz.service.UserRoleService;
+import aaron.user.service.biz.service.UserService;
+import aaron.user.service.common.utils.AdminUtil;
 import aaron.user.service.common.exception.UserError;
 import aaron.user.service.common.exception.UserException;
 import aaron.user.service.pojo.model.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -36,6 +40,15 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
     @Autowired
     RoleResourceService roleResourceService;
 
+    @Autowired
+    CacheManager cacheManager;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    UserRoleService userRoleService;
+
     @FullCommonFieldU
     @Override
     public boolean save(RoleDto roleDto) {
@@ -50,7 +63,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
     @Override
     public boolean update(RoleDto roleDto) {
         Role role = CommonUtils.copyProperties(roleDto,Role.class);
-        if (baseMapper.update(role) == 1){
+        if (baseMapper.updateById(role) == 1){
             return true;
         }
         throw new UserException(UserError.UPDATE_FAIL);
@@ -62,17 +75,34 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
      * @param roleDtoList 角色List集合
      * @return 删除成功条数
      */
+    //@Transactional(rollbackFor = Exception.class)
     @Override
     public boolean delete(List<RoleDto> roleDtoList) {
         List<Role> roleList = CommonUtils.convertList(roleDtoList,Role.class);
         for (Role role : roleList) {
             role.setJudgeId(CommonUtils.judgeCompanyAndOrg());
         }
-        if (baseMapper.selectByIdList(roleList) > 0){
+        // 先判断是否有人使用这个角色，如果没有就直接删除，将role_resource表记录级联删除掉
+        if (baseMapper.selectByIdList(roleList.stream().map(Role::getId).collect(Collectors.toList())).size() > 0){
             throw new UserException(UserError.ROLE_IS_IN_USE);
         }
-        if (removeByIds(roleList)){
-            return true;
+        try {
+            // 删除role_resource
+            roleResourceService.removeByRoleList(roleList);
+            // 删除role
+            int count = 0;
+            for (Role role : roleList) {
+                if (baseMapper.delete(role.getId())){
+                    count++;
+                }else {
+                    throw new UserException(UserError.DEL_ROLE_FAIL,role.getName());
+                }
+            }
+            if (count == roleList.size()){
+                return true;
+            }
+        }catch (Exception e){
+            throw new UserException(UserError.ROLE_POSSIBLY_IN_USE);
         }
         throw new UserException(UserError.DELETE_FAIL);
     }
@@ -85,6 +115,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
      */
     @Override
     public List<Role> queryByCondition(Role role) {
+        // 说明是超级管理员，直接显示所有角色
+        if (TokenUtils.getUser().getOrgId() == null){
+            return list();
+        }
         role.setJudgeId(CommonUtils.judgeCompanyAndOrg());
         return baseMapper.query(role);
     }
@@ -105,24 +139,30 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
         return true;
     }
 
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean addResourceForRole(List<RoleResourceDto> resourceDtos) {
-        List<RoleResource> resourceList = CommonUtils.convertList(resourceDtos,RoleResource.class);
-        List<RoleResource> roles = resourceList.stream().filter(distinctByKey(RoleResource::getRoleId)).collect(Collectors.toList());
-        for (RoleResource role : roles) {
-            baseMapper.deleteResourceForRole(role);
+        List<RoleResource> roles = CommonUtils.convertList(resourceDtos,RoleResource.class);
+        Set<Long> idSet = roles.stream().map(RoleResource::getRoleId).collect(Collectors.toSet());
+        for (long id: idSet) {
+            baseMapper.deleteResourceForRole(id);
         }
-        if (resourceList.size() != 0){
-            for (RoleResource resource : resourceList) {
+        if (roles.size() != 0){
+            for (RoleResource resource : roles) {
                 resource.setId(snowFlake.nextId());
             }
-            if (roleResourceService.saveBatch(roles)){
-                return true;
+            for (RoleResource role : roles) {
+                roleResourceService.save(role);
             }
+            return true;
+//            if (roleResourceService.saveBatch(roles)){
+//                return true;
+//            }
         }
         throw new UserException(UserError.SAVE_FAIL);
     }
+
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Map<Object,Boolean> seen = new ConcurrentHashMap<>();
@@ -131,6 +171,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
 
     @Override
     public List<UserForRole> queryUserRole(Role role) {
+        if (AdminUtil.isSuperAdmin()){
+
+            return baseMapper.queryUserForRoleSP();
+
+        }
         return baseMapper.queryUserForRole(role);
     }
 

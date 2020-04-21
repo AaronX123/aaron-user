@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Mapper
 public interface CompanyDao extends BaseMapper<Company> {
-    @Select("SELECT name FROM t_company WHERE id = #{id}")
+    @Select("SELECT name FROM company WHERE id = #{id}")
     String selectNameById(Long id);
 
     /**
@@ -24,8 +24,8 @@ public interface CompanyDao extends BaseMapper<Company> {
      * @return 符合条件的公司记录
      */
     @Select("<script>" +
-            "SELECT a.*,b.name AS orgName FROM t_company a " +
-            "LEFT JOIN t_organization b ON a.org_id = b.id"  +
+            "SELECT a.*,b.name AS orgName FROM company a " +
+            "LEFT JOIN organization b ON a.org_id = b.id"  +
             "<where>" +
             "<if test=\"name!=null and name!=''\">" +
             "AND a.name LIKE CONCAT(#{name},'%')" +
@@ -43,10 +43,10 @@ public interface CompanyDao extends BaseMapper<Company> {
      * 查询树
      * @return 树的相关数据
      */
-    @Select("SELECT id,name,org_id as parent_id,version from t_company " +
+    @Select("SELECT id,name,org_id as parent_id,version from company " +
             "WHERE id = #{judgeId} OR org_id = #{judgeId} " +
             "UNION " +
-            "SELECT id,name,null as parent_id,version FROM t_organization " +
+            "SELECT id,name,null as parent_id,version FROM organization " +
             "ORDER BY parent_id")
     List<TreeList> getQueryListData(Long judgeId);
 }

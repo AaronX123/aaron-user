@@ -39,7 +39,7 @@ public class OrganizationController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.SAVE_O)
-    public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<OrganizationItemVo> request){
+    public CommonResponse<Boolean> saveOrganization(@RequestBody @Valid CommonRequest<OrganizationItemVo> request){
         OrganizationDto organizationDto = CommonUtils.copyProperties(request.getData(),OrganizationDto.class);
         organizationService.save(organizationDto);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
@@ -47,8 +47,8 @@ public class OrganizationController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DEL_O)
-    public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<OrganizationItemVo>> request){
+    @DeleteMapping(ControllerConstants.DEL_O)
+    public CommonResponse<Boolean> deleteOrganization(@RequestBody @Valid CommonRequest<List<OrganizationItemVo>> request){
         List<OrganizationDto> dtoList = CommonUtils.convertList(request.getData(),OrganizationDto.class);
         organizationService.delete(dtoList);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
@@ -56,8 +56,8 @@ public class OrganizationController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE_O)
-    public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<OrganizationItemVo> request){
+    @PutMapping(ControllerConstants.UPDATE_O)
+    public CommonResponse<Boolean> updateOrganization(@RequestBody @Valid CommonRequest<OrganizationItemVo> request){
         OrganizationDto organizationDto = CommonUtils.copyProperties(request.getData(),OrganizationDto.class);
         organizationDto.setOldVersion(organizationDto.getVersion());
         organizationService.update(organizationDto);
@@ -66,17 +66,18 @@ public class OrganizationController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.QUERY_O)
-    public CommonResponse<Map> query(@RequestBody CommonRequest<OrganizationQueryVo> request){
+    public CommonResponse<Map> queryOrganization(@RequestBody CommonRequest<OrganizationQueryVo> request){
         OrganizationDto dto = CommonUtils.copyProperties(request.getData(),OrganizationDto.class);
         Page<OrganizationListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
         List<Organization> organizationList = organizationService.list(dto);
-        Map<String,Object> pageMap = PageMapUtil.getPageMap(organizationList,page);
+        List<OrganizationListVo> listVos = CommonUtils.convertList(organizationList,OrganizationListVo.class);
+        Map<String,Object> pageMap = PageMapUtil.getPageMap(listVos,page);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,pageMap);
     }
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.GET_UF)
-    public CommonResponse<OrganizationListVo> getUpdateForm(@RequestBody CommonRequest<Long> request){
+    public CommonResponse<OrganizationListVo> getUpdateFormOrganization(@RequestBody CommonRequest<Long> request){
         Organization organization = organizationService.getById(request.getData());
         OrganizationListVo organizationListVo = CommonUtils.copyProperties(organization,OrganizationListVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,organizationListVo);

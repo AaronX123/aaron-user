@@ -1,11 +1,13 @@
 package aaron.user.service.pojo.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -102,7 +104,11 @@ public class Resource extends Model<Resource> implements Serializable {
      */
     private Long version;
 
-
+    /**
+     * 乐观锁机制
+     */
+    @TableField(exist = false)
+    private Long oldVersion;
     @Override
     protected Serializable pkVal() {
         return id;

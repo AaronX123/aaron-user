@@ -22,7 +22,7 @@ public interface DepartmentDao extends BaseMapper<Department> {
      * @return 更新成功记录数
      */
     @Update("<script>" +
-            "UPDATE t_department " +
+            "UPDATE department " +
             "SET id = #{id},company_id = #{companyId},name = #{name},mnemonic_code = #{mnemonicCode},code = #{code}," +
             "level = #{level}, parent_id = #{parentId},master = #{master},descript = #{descript},status = #{status},created_by = #{createdBy}," +
             "created_time = #{createdTime},updated_by = #{updatedBy},updated_time = #{updatedTime},version = #{version} " +
@@ -49,7 +49,7 @@ public interface DepartmentDao extends BaseMapper<Department> {
         public String batchSelect(Map map) {
             List<Department> departments = (List<Department>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("SELECT count(id) FROM t_department WHERE ");
+            sb.append("SELECT count(id) FROM department WHERE ");
             for (int i = 0; i < departments.size(); i++) {
                 sb.append("parent_id = ").append(departments.get(i).getId());
                 if (i != departments.size()-1) {
@@ -62,7 +62,7 @@ public interface DepartmentDao extends BaseMapper<Department> {
         public String batchDelete(Map map) {
             List<Department> departments = (List<Department>) map.get("list");
             StringBuilder sb = new StringBuilder();
-            sb.append("DELETE FROM t_department WHERE ");
+            sb.append("DELETE FROM department WHERE ");
             for (int i = 0; i < departments.size(); i++) {
                 sb.append("(id = ").append(departments.get(i).getId()).append(" AND ")
                         .append("version = ").append(departments.get(i).getVersion());
@@ -86,8 +86,8 @@ public interface DepartmentDao extends BaseMapper<Department> {
      * @return 符合条件的部门记录
      */
     @Select("<script>" +
-            "SELECT a.*,b.name AS parentDepartment FROM t_department a " +
-            "LEFT JOIN t_department b ON b.id = a.parent_id " +
+            "SELECT a.*,b.name AS parentDepartment FROM department a " +
+            "LEFT JOIN department b ON b.id = a.parent_id " +
             "<where>" +
             "<if test=\"name!=null and name!=''\">" +
             "AND a.name LIKE CONCAT(#{name},'%')" +
@@ -107,14 +107,14 @@ public interface DepartmentDao extends BaseMapper<Department> {
      * 去重查询部门等级
      * @return 部门等级
      */
-    @Select("SELECT DISTINCT level FROM t_department ORDER BY level")
+    @Select("SELECT DISTINCT level FROM department ORDER BY level")
     List<Department> queryLevel();
 
     /**
      * 根据等级排序查询id及name
      * @return 符合条件的部门记录集合
      */
-    @Select("SELECT id,name FROM t_department ORDER BY level")
+    @Select("SELECT id,name FROM department ORDER BY level")
     List<Department> queryParent();
 
     /**
@@ -122,19 +122,19 @@ public interface DepartmentDao extends BaseMapper<Department> {
      * @return treelist记录
      */
     @Select("<script>" +
-            "SELECT id,name,company_id AS parent_id,company_id AS root_id,version from t_department " +
+            "SELECT id,name,company_id AS parent_id,company_id AS root_id,version from department " +
             "WHERE level = '1' " +
             "<if test=\"_parameter!=null and _parameter!=''\">" +
             "AND company_id = #{_parameter} " +
             "</if>" +
             "UNION  " +
-            "SELECT id,name,parent_id,company_id AS root_id,version from t_department " +
+            "SELECT id,name,parent_id,company_id AS root_id,version from department " +
             "WHERE level != '1' " +
             "<if test=\"_parameter!=null and _parameter!=''\">" +
             "AND company_id = #{_parameter} " +
             "</if>" +
             "UNION  " +
-            "SELECT id,name,null AS parent_id,id AS root_id,version FROM t_company " +
+            "SELECT id,name,null AS parent_id,id AS root_id,version FROM company " +
             "<where>" +
             "<if test=\"_parameter!=null and _parameter!=''\">" +
             "id = #{_parameter} " +

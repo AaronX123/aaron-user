@@ -1,5 +1,6 @@
 package aaron.user.service.pojo.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -76,13 +77,13 @@ public class Position extends Model<Position> implements Serializable {
     /**
      *所属公司
      */
-    @Transient
+    @TableField(exist = false)
     private String companyName;
 
-    @Transient
+    @TableField(exist = false)
     private Long judgeId;
 
-    @Transient
+    @TableField(exist = false)
     private Long oldVersion;
 
 

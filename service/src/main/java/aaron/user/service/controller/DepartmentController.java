@@ -43,7 +43,7 @@ public class DepartmentController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.SAVE_D)
-    public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<DepartmentItemVo> request){
+    public CommonResponse<Boolean> saveDepartment(@RequestBody @Valid CommonRequest<DepartmentItemVo> request){
         DepartmentDto departmentDto = CommonUtils.copyProperties(request.getData(),DepartmentDto.class);
         departmentService.save(departmentDto);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
@@ -51,8 +51,8 @@ public class DepartmentController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE_D)
-    public CommonResponse<Boolean> update(@RequestBody @Valid CommonRequest<DepartmentItemVo> request){
+    @PutMapping(ControllerConstants.UPDATE_D)
+    public CommonResponse<Boolean> updateDepartment(@RequestBody @Valid CommonRequest<DepartmentItemVo> request){
         DepartmentDto departmentDto = CommonUtils.copyProperties(request.getData(),DepartmentDto.class);
         departmentDto.setOldVersion(departmentDto.getVersion());
         departmentService.update(departmentDto);
@@ -60,8 +60,8 @@ public class DepartmentController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DEL_D)
-    public CommonResponse<Boolean> delete(@RequestBody @Valid CommonRequest<List<DepartmentItemVo>> request){
+    @DeleteMapping(ControllerConstants.DEL_D)
+    public CommonResponse<Boolean> deleteDepartment(@RequestBody @Valid CommonRequest<List<DepartmentItemVo>> request){
         List<DepartmentItemVo> itemVos = request.getData();
         List<DepartmentDto> departmentDtoList = CommonUtils.convertList(itemVos,DepartmentDto.class);
         departmentService.delete(departmentDtoList);
@@ -70,7 +70,7 @@ public class DepartmentController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.GET_UF_D)
-    public CommonResponse<DepartmentListVo> getUpdateForm(@RequestBody CommonRequest<Long> request){
+    public CommonResponse<DepartmentListVo> getUpdateFormDepartment(@RequestBody CommonRequest<Long> request){
         Department department = departmentService.getById(request.getData());
         if (department == null){
             throw new UserException(UserError.DATA_NOT_EXIST);
@@ -81,7 +81,7 @@ public class DepartmentController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.QUERY_D)
-    public CommonResponse<Map> query(@RequestBody @Valid CommonRequest<DepartmentQueryVo> request){
+    public CommonResponse<Map> queryDepartment(@RequestBody @Valid CommonRequest<DepartmentQueryVo> request){
         Department department = CommonUtils.copyProperties(request.getData(),Department.class);
         department.setJudgeId(CommonUtils.judgeCompanyAndOrg());
         Page<DepartmentListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
@@ -92,24 +92,24 @@ public class DepartmentController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.GET_DEP_LEVEL)
-    public CommonResponse<List> queryLevel(){
+    @GetMapping(ControllerConstants.GET_DEP_LEVEL)
+    public CommonResponse<List> queryLevelDepartment(){
         List<Department> departmentList = departmentService.queryLevel();
         List<DepartmentQueryVo> res = CommonUtils.convertList(departmentList,DepartmentQueryVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,res);
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.GET_DEP_PARENT)
-    public CommonResponse<List> queryParent(){
+    @GetMapping(ControllerConstants.GET_DEP_PARENT)
+    public CommonResponse<List> queryParentDepartment(){
         List<Department> departmentList = departmentService.queryParent();
         List<DepartmentQueryVo> res = CommonUtils.convertList(departmentList,DepartmentQueryVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,res);
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.GET_DEP_TREE_DATA)
-    public CommonResponse<List> queryTreeData(){
+    @GetMapping(ControllerConstants.GET_DEP_TREE_DATA)
+    public CommonResponse<List> queryTreeDataDepartment(){
         List<TreeList> departmentList = departmentService.queryTreeData();
         List<TreeListVo> res = CommonUtils.convertList(departmentList,TreeListVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,res);

@@ -7,19 +7,16 @@ import aaron.common.utils.CommonUtils;
 import aaron.common.utils.SnowFlake;
 import aaron.common.utils.TokenUtils;
 import aaron.user.api.dto.*;
-import aaron.user.service.biz.dao.RoleDao;
 import aaron.user.service.biz.dao.UserDao;
-import aaron.user.service.biz.service.CompanyService;
-import aaron.user.service.biz.service.UserRoleService;
-import aaron.user.service.biz.service.UserService;
+import aaron.user.service.biz.service.*;
+import aaron.user.service.common.utils.AdminUtil;
 import aaron.user.service.common.exception.UserError;
 import aaron.user.service.common.exception.UserException;
-import aaron.user.service.pojo.model.Company;
-import aaron.user.service.pojo.model.TreeList;
-import aaron.user.service.pojo.model.User;
-import aaron.user.service.pojo.model.UserRole;
+import aaron.user.service.common.utils.SqlUtil;
+import aaron.user.service.pojo.model.*;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.org.apache.regexp.internal.RE;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +25,11 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author xiaoyouming
@@ -49,13 +46,25 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
     UserRoleService userRoleService;
 
     @Autowired
+    OrganizationService organizationService;
+
+    @Autowired
     CacheManager cacheManager;
 
     @Autowired
     CompanyService companyService;
 
     @Autowired
+    DepartmentService departmentService;
+
+    @Autowired
+    PositionService positionService;
+
+    @Autowired
     UserService userService;
+
+    @Autowired
+    RoleService roleService;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -84,10 +93,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
     @Override
     public boolean update(UserDto userDto) {
         User user = CommonUtils.copyProperties(userDto,User.class);
-        user.setJudgeId(CommonUtils.judgeCompanyAndOrg());
-        if (user.getJudgeId().equals(TokenUtils.getUser().getOrgId())){
-            user.setJudgeId(null);
-        }
         ByteSource salt = ByteSource.Util.bytes(user.getName());
         String pwd = new SimpleHash("MD5",user.getPassword(),salt,32).toString();
         user.setPassword(pwd);
@@ -116,7 +121,15 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         // 先删除角色
         baseMapper.deleteRoleList(userList);
         // 再删除用户
-        if (baseMapper.deleteBatchIds(userList) == userList.size()){
+        int count = 0;
+        for (User user : userList) {
+            if (baseMapper.delById(user.getId())){
+                count++;
+            }else {
+                throw new UserException(UserError.DEL_USER_FAIL,user.getName());
+            }
+        }
+        if (count == userList.size()){
             return true;
         }
         throw new UserException(UserError.DELETE_FAIL);
@@ -130,11 +143,114 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
      */
     @Override
     public List<User> queryByCondition(UserDto userDto) {
-        User user = CommonUtils.copyProperties(userDto,User.class);
-        if (CommonUtils.judgeCompanyAndOrg().equals(TokenUtils.getUser().getOrgId())){
-            user.setJudgeId(null);
+        List<User> userList = new ArrayList<>();
+        if (AdminUtil.isSuperAdmin()){
+            userList = list();
         }
-        return baseMapper.query(user);
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        // 对于公司管理员来说
+        if (TokenUtils.getUser().getCompanyId() != null){
+            userQueryWrapper.eq("company_id",TokenUtils.getUser().getCompanyId());
+            if (StringUtils.isNotBlank(userDto.getName())){
+                userQueryWrapper.likeRight("name",userDto.getName());
+            }
+            if (StringUtils.isNotBlank(userDto.getCode())){
+                userQueryWrapper.eq("code",userDto.getName());
+            }
+            if (StringUtils.isNotBlank(userDto.getTel())){
+                userQueryWrapper.eq("tel",userDto.getTel());
+            }
+            userList = list(userQueryWrapper);
+            if (CommonUtils.isEmpty(userList)){
+                return null;
+            }
+        }
+        // 对于机构管理员来说
+        else if (!AdminUtil.isSuperAdmin()){
+            // 先查询机构的角色
+            List<Role> roleList = roleService.queryByCondition(new Role());
+            // 去关联表查询
+            List<UserRole> userRoleList = userRoleService.listByRoleId(roleList.stream().map(Role::getId).collect(Collectors.toList()));
+            userList = listByIds(userRoleList.stream().map(UserRole::getUserId).collect(Collectors.toList()));
+        }
+        // 做右匹配
+        if (StringUtils.isNotBlank(userDto.getName())){
+            userList = userList.stream().filter(u -> SqlUtil.like(userDto.getName(),u.getName())).collect(Collectors.toList());
+        }
+        // 对于工号的处理
+        if (StringUtils.isNotBlank(userDto.getCode())){
+            userList = userList.stream().filter(u -> userDto.getCode().equals(u.getCode())).collect(Collectors.toList());
+        }
+        // 对手机的处理
+        if (StringUtils.isNotBlank(userDto.getTel())){
+            userList = userList.stream().filter(u -> userDto.getTel().equals(u.getTel())).collect(Collectors.toList());
+        }
+        // 对角色的处理
+        if (userDto.getRoleId() != null){
+            List<Long> idList = new ArrayList<>();
+            idList.add(userDto.getRoleId());
+            List<UserRole> userRoleList = userRoleService.listByRoleId(idList);
+            List<UserRole> userRoles = userRoleList.stream().filter(u -> userDto.getRoleId().equals(u.getRoleId())).collect(Collectors.toList());
+            List<Long> userId = userRoles.stream().map(UserRole::getUserId).collect(Collectors.toList());
+            userList = userList.stream().filter(u -> userId.contains(u.getId())).map(u -> u.setRoleId(userDto.getRoleId())).collect(Collectors.toList());
+        }
+        // 为这个User设置roleId
+        List<UserRole> userRoleList = userRoleService.listByUserId(userList.stream().map(User::getId).collect(Collectors.toList()));
+        for (User user : userList) {
+            for (UserRole userRole : userRoleList) {
+                if (user.getId().equals(userRole.getUserId())){
+                    user.setRoleId(userRole.getRoleId());
+                    break;
+                }
+            }
+        }
+        Map<Long,String> cache = new HashMap<>(userList.size() * 2);
+        for (User user : userList) {
+            String val;
+            if (user.getDepartmentId() != null){
+                if (StringUtils.isNotBlank(val = cache.get(user.getDepartmentId()))){
+                    user.setDepartmentName(val);
+                }else {
+                    val = departmentService.getById(user.getDepartmentId()).getName();
+                    cache.put(user.getDepartmentId(),val);
+                    user.setDepartmentName(val);
+                }
+            }
+            if (user.getCompanyId() != null){
+                if (StringUtils.isNotBlank(val = cache.get(user.getCompanyId()))){
+                    user.setCompanyName(val);
+                }else {
+                    val = companyService.getById(user.getCompanyId()).getName();
+                    cache.put(user.getCompanyId(),val);
+                    user.setCompanyName(val);
+                }
+            }
+            if (user.getPositionId() != null){
+                if (StringUtils.isNotBlank(val = cache.get(user.getPositionId()))){
+                    user.setPositionName(val);
+                }else {
+                    val = positionService.getById(user.getPositionId()).getName();
+                    cache.put(user.getPositionId(),val);
+                    user.setPositionName(val);
+                }
+            }
+            if (user.getRoleId() != null){
+                if (StringUtils.isNotBlank(val = cache.get(user.getRoleId()))){
+                    user.setRoleName(val);
+                }else {
+                    val = roleService.getById(user.getRoleId()).getName();
+                    cache.put(user.getRoleId(),val);
+                    user.setRoleName(val);
+                }
+            }
+        }
+        return userList;
+//
+//        User user = CommonUtils.copyProperties(userDto,User.class);
+//        if (CommonUtils.judgeCompanyAndOrg().equals(TokenUtils.getUser().getOrgId())){
+//            user.setJudgeId(null);
+//        }
+//        return baseMapper.query(user);
     }
 
     /**
@@ -243,9 +359,28 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
      */
     @Override
     public List<TreeList> getQueryListData(Long judgeId) {
+        if (AdminUtil.isSuperAdmin()){
+            List<TreeList> res = new ArrayList<>();
+            List<Organization> organizationList = organizationService.list();
+            for (Organization organization : organizationList) {
+                res.addAll(baseMapper.getQueryListData(organization.getId()));
+            }
+            return res;
+        }
         if (judgeId.equals(TokenUtils.getUser().getOrgId())){
             judgeId = null;
         }
-        return baseMapper.getQueryListData(judgeId);
-    }
+        List<TreeList> data = baseMapper.getQueryListData(judgeId);
+        // 去掉不是该用户的机构的数据 id为companyId
+        List<Company> companyList = companyService.queryCompany(CompanyDto.builder().orgId(TokenUtils.getUser().getOrgId()).build());
+        List<TreeList> res = new ArrayList<>();
+        for (Company company : companyList) {
+            for (TreeList treeList : data) {
+                if (treeList.getId().equals(company.getId())){
+                    res.add(treeList);
+                }
+            }
+        }
+        return res;
+  }
 }

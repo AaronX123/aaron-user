@@ -16,9 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author xiaoyouming
@@ -50,13 +49,16 @@ public class LoginController {
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,loginService.getUserInfo());
     }
 
-    @PostMapping(ControllerConstants.USER_MENU)
+    @GetMapping(ControllerConstants.USER_MENU)
     public CommonResponse<List<UserMenu>> getUserMenu(){
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,loginService.getUserMenu());
     }
 
     @PostMapping(ControllerConstants.LOGOUT)
-    public CommonResponse<Boolean> logout(@RequestBody @Valid CommonRequest<List<Long>> request){
-        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,loginService.logout(request.getData()));
+    public CommonResponse<Boolean> logout(@RequestBody @Valid CommonRequest<Object> request){
+        LinkedHashMap<String,Object> map = (LinkedHashMap<String, Object>) request.getData();
+        ArrayList<String> data = (ArrayList<String>) map.get("data");
+        List<Long> list = data.stream().map(e -> Long.valueOf(e)).collect(Collectors.toList());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,loginService.logout(list));
     }
 }

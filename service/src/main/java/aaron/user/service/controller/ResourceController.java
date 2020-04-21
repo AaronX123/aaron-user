@@ -41,7 +41,7 @@ public class ResourceController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.SAVE_R)
-    public CommonResponse<Boolean> save(@RequestBody @Valid CommonRequest<ResourceItemVo> request){
+    public CommonResponse<Boolean> saveResource(@RequestBody @Valid CommonRequest<ResourceItemVo> request){
         ResourceDto resourceDto = CommonUtils.copyProperties(request.getData(),ResourceDto.class);
         resourceService.save(resourceDto);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
@@ -49,15 +49,15 @@ public class ResourceController {
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.GET_UF_R)
-    public CommonResponse<ResourceListVo> queryUpdateForm(@RequestBody CommonRequest<Long> request){
+    public CommonResponse<ResourceListVo> queryUpdateFormResource(@RequestBody CommonRequest<Long> request){
         Resource resource = resourceService.getById(request.getData());
         ResourceListVo resourceListVo = CommonUtils.copyProperties(resource,ResourceListVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,resourceListVo);
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.DEL_R)
-    public CommonResponse<Boolean> delete(@RequestBody CommonRequest<List<ResourceItemVo>> request){
+    @DeleteMapping(ControllerConstants.DEL_R)
+    public CommonResponse<Boolean> deleteResource(@RequestBody CommonRequest<List<ResourceItemVo>> request){
         List<Resource> resourceList = CommonUtils.convertList(request.getData(),Resource.class);
         resourceService.delete(resourceList);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
@@ -65,16 +65,17 @@ public class ResourceController {
 
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.UPDATE_R)
-    public CommonResponse<Boolean> update(@RequestBody CommonRequest<ResourceItemVo> request){
+    @PutMapping(ControllerConstants.UPDATE_R)
+    public CommonResponse<Boolean> updateResource(@RequestBody CommonRequest<ResourceItemVo> request){
         ResourceDto resourceDto = CommonUtils.copyProperties(request.getData(),ResourceDto.class);
+        resourceDto.setOldVersion(resourceDto.getVersion());
         resourceService.update(resourceDto);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
     }
 
     @MethodEnhancer
     @PostMapping(ControllerConstants.QUERY_R)
-    public CommonResponse<Map> query(@RequestBody CommonRequest<ResourceQueryVo> request){
+    public CommonResponse<Map> queryResource(@RequestBody CommonRequest<ResourceQueryVo> request){
         ResourceDto resourceDto = CommonUtils.copyProperties(request.getData(),ResourceDto.class);
         Page<ResourceListVo> page = PageHelper.startPage(request.getData().getCurrentPage(),request.getData().getTotalPages());
         List<Resource> resourceList = resourceService.list(resourceDto);
@@ -84,8 +85,8 @@ public class ResourceController {
     }
 
     @MethodEnhancer
-    @PostMapping(ControllerConstants.QUERY_LIST_R)
-    public CommonResponse<List<TreeListDto>> getResourceList(@RequestBody CommonRequest<ResourceQueryVo> request){
+    @GetMapping(ControllerConstants.QUERY_LIST_R)
+    public CommonResponse<List<TreeListDto>> getResourceListResource(){
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,resourceService.getQueryList());
     }
 }

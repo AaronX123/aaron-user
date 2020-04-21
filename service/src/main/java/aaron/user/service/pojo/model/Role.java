@@ -1,5 +1,6 @@
 package aaron.user.service.pojo.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -81,31 +82,31 @@ public class Role extends Model<Role> implements Serializable {
     /**
      * 所属机构
      */
-    @Transient
+    @TableField(exist = false)
     private String orgName;
 
     /**
      *所属公司
      */
-    @Transient
+    @TableField(exist = false)
     private String companyName;
 
     /**
      * 资源节点ID
      */
-    @Transient
+    @TableField(exist = false)
     private Long resourceId;
 
     /**
      * 用户ID
      */
-    @Transient
+    @TableField(exist = false)
     private Long userId;
 
-    @Transient
+    @TableField(exist = false)
     private Long judgeId;
 
-    @Transient
+    @TableField(exist = false)
     private Long oldVersion;
 
     @Override
