@@ -1,6 +1,8 @@
 package aaron.user.service.pojo.vo;
 
 import aaron.common.data.common.BaseQueryVo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.io.Serializable;
 
@@ -14,6 +16,7 @@ public class SystemParamQueryVo extends BaseQueryVo implements Serializable {
     /**
      * 参数类型
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long paramType;
     /**
      * 输入参数项

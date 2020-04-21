@@ -1,5 +1,8 @@
 package aaron.user.service.pojo.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -13,11 +16,13 @@ public class SystemParamItemVo extends BaseVo implements Serializable {
     /**
      * 系统参数ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
      * 组织机构ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long orgId;
 
     /**

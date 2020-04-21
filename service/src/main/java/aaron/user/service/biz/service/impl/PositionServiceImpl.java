@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -145,6 +146,11 @@ public class PositionServiceImpl extends ServiceImpl<PositionDao, Position> impl
      */
     @Override
     public List<UserOptionsDto> queryPosition() {
-        return baseMapper.queryPosition();
+        List<Company> companyList = companyService.listByOrgId(TokenUtils.getUser().getOrgId());
+        List<UserOptionsDto> res = new ArrayList<>();
+        for (Company company : companyList) {
+            res.addAll(baseMapper.queryPosition(company.getId()));
+        }
+        return res;
     }
 }

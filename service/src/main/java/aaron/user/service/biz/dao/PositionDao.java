@@ -21,8 +21,8 @@ public interface PositionDao extends BaseMapper<Position> {
      * 查询职位集合
      * @return 职位集合
      */
-    @Select("SELECT id AS positionId,name AS positionName,company_id FROM position ORDER BY LENGTH(name)")
-    List<UserOptionsDto> queryPosition();
+    @Select("SELECT id AS positionId,name AS positionName,company_id FROM position WHERE company_id = #{id} ORDER BY LENGTH(name)")
+    List<UserOptionsDto> queryPosition(@Param("id")long id);
 
     @Select("<script>" +
             "SELECT * FROM position WHERE company_id IN " +

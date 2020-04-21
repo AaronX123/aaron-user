@@ -3,11 +3,10 @@ package aaron.user.service.biz.dao;
 import aaron.user.service.pojo.model.Company;
 import aaron.user.service.pojo.model.TreeList;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author xiaoyouming
@@ -18,7 +17,7 @@ import java.util.List;
 public interface CompanyDao extends BaseMapper<Company> {
 
     @Select("SELECT * FROM company WHERE org_id = #{id}")
-    List<Company> listByOrgId(@Param("id") long id);
+    List<Company> listByOrgId(@Param("id") Long id);
 
     @Select("SELECT name FROM company WHERE id = #{id}")
     String selectNameById(Long id);
@@ -48,10 +47,19 @@ public interface CompanyDao extends BaseMapper<Company> {
      * 查询树
      * @return 树的相关数据
      */
-    @Select("SELECT id,name,org_id as parent_id,version from company " +
+//    @Results(id = "tree",value = {
+//            @Result(property = "id", column = "id", id = true),
+//            @Result(property = "name", column = "name"),
+//            @Result(property = "parent_id", column = "org_id"),
+//            @Result(property = "version", column = "version")
+//    })
+//    @ResultMap("tree")
+    @Select("<script>" +
+            "SELECT id,name,org_id as parent_id,version from company " +
             "WHERE id = #{judgeId} OR org_id = #{judgeId} " +
             "UNION " +
             "SELECT id,name,null as parent_id,version FROM organization " +
-            "ORDER BY parent_id")
-    List<TreeList> getQueryListData(Long judgeId);
+            "ORDER BY parent_id" +
+            "</script>")
+    List<Map> getQueryListData(Long judgeId);
 }

@@ -1,6 +1,8 @@
 package aaron.user.service.pojo.vo;
 
 import aaron.common.data.common.BaseQueryVo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.io.Serializable;
 
@@ -14,11 +16,13 @@ public class ResourceQueryVo extends BaseQueryVo implements Serializable {
     /**
      * 节点编号
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
      * 父亲节点
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long parentId;
     public ResourceQueryVo() {
     }

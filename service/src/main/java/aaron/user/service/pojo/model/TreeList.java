@@ -2,7 +2,10 @@ package aaron.user.service.pojo.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -11,6 +14,9 @@ import java.util.Objects;
  * @author LuoHui
  */
 @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TreeList implements Serializable {
     private static final long serialVersionUID = -2740873114126068062L;
     @JsonSerialize(using = ToStringSerializer.class)
@@ -22,46 +28,6 @@ public class TreeList implements Serializable {
     private Long rootId;
     @JsonSerialize(using = ToStringSerializer.class)
     private Long version;
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public Long getRootId() {
-        return rootId;
-    }
-
-    public void setRootId(Long rootId) {
-        this.rootId = rootId;
-    }
-
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
 
     @Override
     public String toString() {

@@ -1,5 +1,8 @@
 package aaron.user.service.pojo.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -11,8 +14,14 @@ import java.util.Objects;
  */
 public class RoleResourceVo implements Serializable {
     private static final long serialVersionUID = -5392841873474130071L;
+
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
+
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long roleId;
+
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long resourceId;
     private Byte type;
 

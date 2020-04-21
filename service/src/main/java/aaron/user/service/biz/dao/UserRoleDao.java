@@ -31,4 +31,10 @@ public interface UserRoleDao extends BaseMapper<UserRole> {
             "        </foreach>" +
             "</script>")
     List<UserRole> listByUserIdList(@Param("ids") List<Long> ids);
+
+    @Select("SELECT * FROM user_role WHERE user_id = #{id}")
+    UserRole selectByUserId(@Param("id")long id);
+
+    @Select("SELECT * FROM user_role WHERE role_id = #{id}")
+    UserRole selectByRoleId(@Param("id")long id);
 }

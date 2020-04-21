@@ -1,6 +1,8 @@
 package aaron.user.service.pojo.vo;
 
 import aaron.common.data.common.BaseQueryVo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.io.Serializable;
 
@@ -14,6 +16,7 @@ public class PositionQueryVo extends BaseQueryVo implements Serializable {
     /**
      * 职位ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 职位名

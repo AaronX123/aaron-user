@@ -167,11 +167,13 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         }
         // 对于机构管理员来说
         else if (!AdminUtil.isSuperAdmin()){
+            // user 没有org id
             // 先查询机构的角色
             List<Role> roleList = roleService.queryByCondition(new Role());
-            // 去关联表查询
+//            // 去关联表查询已经是本机构的人员
             List<UserRole> userRoleList = userRoleService.listByRoleId(roleList.stream().map(Role::getId).collect(Collectors.toList()));
             userList = listByIds(userRoleList.stream().map(UserRole::getUserId).collect(Collectors.toList()));
+
         }
         // 做右匹配
         if (StringUtils.isNotBlank(userDto.getName())){
@@ -185,6 +187,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         if (StringUtils.isNotBlank(userDto.getTel())){
             userList = userList.stream().filter(u -> userDto.getTel().equals(u.getTel())).collect(Collectors.toList());
         }
+        if (CommonUtils.isEmpty(userList)){
+            return null;
+        }
         // 对角色的处理
         if (userDto.getRoleId() != null){
             List<Long> idList = new ArrayList<>();
@@ -193,6 +198,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
             List<UserRole> userRoles = userRoleList.stream().filter(u -> userDto.getRoleId().equals(u.getRoleId())).collect(Collectors.toList());
             List<Long> userId = userRoles.stream().map(UserRole::getUserId).collect(Collectors.toList());
             userList = userList.stream().filter(u -> userId.contains(u.getId())).map(u -> u.setRoleId(userDto.getRoleId())).collect(Collectors.toList());
+        }
+        if (CommonUtils.isEmpty(userList)){
+            return null;
         }
         // 为这个User设置roleId
         List<UserRole> userRoleList = userRoleService.listByUserId(userList.stream().map(User::getId).collect(Collectors.toList()));
@@ -204,7 +212,16 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
                 }
             }
         }
-        Map<Long,String> cache = new HashMap<>(userList.size() * 2);
+        // 为User设置company
+        for (User user : userList) {
+            if (user.getCompanyId() == null){
+                // 根据role查询
+                Role role = roleService.getById(user.getRoleId());
+                user.setCompanyId(role.getCompanyId());
+                user.setRoleId(role.getId());
+            }
+        }
+        Map<Long,String> cache = new HashMap<>(userList.size() << 1);
         for (User user : userList) {
             String val;
             if (user.getDepartmentId() != null){

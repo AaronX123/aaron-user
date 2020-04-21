@@ -2,6 +2,8 @@ package aaron.user.service.pojo.vo;
 
 
 import aaron.common.data.common.BaseQueryVo;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 import java.io.Serializable;
 
@@ -10,6 +12,7 @@ public class UserAlloctionQueryVo extends BaseQueryVo implements Serializable {
     /**
      * 角色ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     /**
      * 用户工号
@@ -22,10 +25,12 @@ public class UserAlloctionQueryVo extends BaseQueryVo implements Serializable {
     /**
      * 公司Id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long companyId;
     /**
      * 组织机构ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long orgId;
 
     public Long getId() {

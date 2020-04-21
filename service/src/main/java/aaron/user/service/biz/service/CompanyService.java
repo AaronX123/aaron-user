@@ -24,5 +24,5 @@ public interface CompanyService extends IService<Company> {
 
     String getNameById(long id);
 
-    List<Company> listByOrgId(long orgId);
+    List<Company> listByOrgId(Long orgId);
 }

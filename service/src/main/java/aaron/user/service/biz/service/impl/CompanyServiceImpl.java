@@ -3,6 +3,7 @@ package aaron.user.service.biz.service.impl;
 import aaron.common.aop.annotation.FullCommonField;
 import aaron.common.aop.annotation.FullCommonFieldU;
 import aaron.common.aop.enums.EnumOperation;
+import aaron.common.data.common.CacheConstants;
 import aaron.common.utils.CommonUtils;
 import aaron.common.utils.TokenUtils;
 import aaron.user.api.dto.CompanyDto;
@@ -13,20 +14,22 @@ import aaron.user.service.biz.service.OrganizationService;
 import aaron.user.service.common.exception.UserError;
 import aaron.user.service.common.exception.UserException;
 import aaron.user.service.common.utils.AdminUtil;
+import aaron.user.service.common.utils.SqlUtil;
 import aaron.user.service.pojo.model.Company;
 import aaron.user.service.pojo.model.Organization;
 import aaron.user.service.pojo.model.TreeList;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import sun.reflect.generics.tree.Tree;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author xiaoyouming
@@ -37,6 +40,10 @@ import java.util.Set;
 public class CompanyServiceImpl extends ServiceImpl<CompanyDao, Company> implements CompanyService {
     @Autowired
     OrganizationService organizationService;
+
+    @Autowired
+    CacheManager cacheManager;
+
 
     @FullCommonFieldU
     @Override
@@ -55,20 +62,44 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyDao, Company> impleme
     @Override
     public List<Company> queryCompany(CompanyDto companyDto) {
         // 如果当前用户id为1 则是超级管理员，直接显示所有公司
-        if (TokenUtils.getUser().getId() == 1){
-            return list();
-        }
-        // 根据orgId查询旗下公司
-        QueryWrapper<Company> wrapper = new QueryWrapper<>();
-        if (companyDto.getOrgId() != null){
-            wrapper.eq("org_id",companyDto.getOrgId());
+        List<Company> companyList = new ArrayList<>();
+        if (AdminUtil.isSuperAdmin()){
+            companyList = list();
         }else {
-            wrapper.eq("org_id", TokenUtils.getUser().getOrgId());
+            // 根据orgId查询旗下公司
+            QueryWrapper<Company> wrapper = new QueryWrapper<>();
+            if (companyDto.getOrgId() != null){
+                wrapper.eq("org_id",companyDto.getOrgId());
+            }else {
+                wrapper.eq("org_id", TokenUtils.getUser().getOrgId());
+            }
+            if (StringUtils.isNotBlank(companyDto.getName())){
+                wrapper.likeRight("name",companyDto.getName());
+            }
+            companyList = list(wrapper);
         }
-        if (StringUtils.isNotBlank(companyDto.getName())){
-            wrapper.likeRight("name",companyDto.getName());
+        Cache orgCache = cacheManager.getCache(CacheConstants.ORG_VAL);
+        if (!CommonUtils.isEmpty(companyList)){
+            // 处理公司名称
+            if (StringUtils.isNotBlank(companyDto.getName())){
+                companyList = companyList.stream().filter(c -> SqlUtil.like(companyDto.getName(),c.getName())).collect(Collectors.toList());
+            }
+            // 处理机构
+            if (companyDto.getOrgId() != null){
+                companyList = companyList.stream().filter(c -> companyDto.getOrgId().equals(c.getOrgId())).collect(Collectors.toList());
+            }
+            for (Company company : companyList) {
+                Cache.ValueWrapper orgWrapper = orgCache.get(company.getOrgId());
+                if (orgWrapper == null){
+                    String val = organizationService.getNameById(company.getOrgId());
+                    company.setOrgName(val);
+                    orgCache.put(company.getOrgId(),val);
+                }else {
+                    company.setOrgName((String) orgWrapper.get());
+                }
+            }
         }
-        return list(wrapper);
+        return companyList;
     }
 
     @Override
@@ -92,8 +123,14 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyDao, Company> impleme
             }
             return res;
         }
-        List<TreeList> treeList = baseMapper.getQueryListData(id);
-        if (treeList == null){
+        List<Map> res2 = baseMapper.getQueryListData(id);
+        List<Object> objectList = CommonUtils.copyComplicateObject(res2,List.class);
+        List<TreeList> treeList = new ArrayList<>();
+        for (Object list : objectList) {
+            TreeList o = ((JSONObject)list).toJavaObject(TreeList.class);
+            treeList.add(o);
+        }
+        if (CommonUtils.isEmpty(treeList)){
             throw new UserException(UserError.DATA_NOT_EXIST);
         }
         Set<TreeList> res = new HashSet<>();
@@ -115,7 +152,7 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyDao, Company> impleme
     }
 
     @Override
-    public List<Company> listByOrgId(long orgId) {
+    public List<Company> listByOrgId(Long orgId) {
         return baseMapper.listByOrgId(orgId);
     }
 }

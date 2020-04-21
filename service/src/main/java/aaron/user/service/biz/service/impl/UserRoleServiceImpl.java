@@ -28,4 +28,14 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleDao, UserRole> impl
     public List<UserRole> listByUserId(List<Long> userId) {
         return baseMapper.listByUserIdList(userId);
     }
+
+    @Override
+    public UserRole selectByUserId(Long userId) {
+        return baseMapper.selectByUserId(userId);
+    }
+
+    @Override
+    public UserRole selectByRoleId(Long roleId) {
+        return baseMapper.selectByRoleId(roleId);
+    }
 }

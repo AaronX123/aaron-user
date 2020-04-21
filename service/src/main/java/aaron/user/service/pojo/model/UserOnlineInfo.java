@@ -2,6 +2,8 @@ package aaron.user.service.pojo.model;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -22,6 +24,7 @@ public class UserOnlineInfo extends Model<UserOnlineInfo> implements Serializabl
     /**
      * 在线ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Id
     private Long id;
 
