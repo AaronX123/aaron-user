@@ -2,6 +2,7 @@ package aaron.user.service.pojo.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.Builder;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,6 +10,7 @@ import java.util.Objects;
 /**
  * @author LuoHui
  */
+@Builder
 public class TreeList implements Serializable {
     private static final long serialVersionUID = -2740873114126068062L;
     @JsonSerialize(using = ToStringSerializer.class)

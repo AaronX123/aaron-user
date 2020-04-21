@@ -80,4 +80,9 @@ public class OrganizationServiceImpl extends ServiceImpl<OrganizationDao, Organi
                 o.getId().equals(TokenUtils.getUser().getOrgId())
         ).collect(Collectors.toList());
     }
+
+    @Override
+    public String getNameById(long id) {
+        return baseMapper.getById(id);
+    }
 }

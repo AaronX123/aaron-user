@@ -4,6 +4,7 @@ import aaron.user.service.pojo.model.Company;
 import aaron.user.service.pojo.model.TreeList;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -15,6 +16,10 @@ import java.util.List;
  */
 @Mapper
 public interface CompanyDao extends BaseMapper<Company> {
+
+    @Select("SELECT * FROM company WHERE org_id = #{id}")
+    List<Company> listByOrgId(@Param("id") long id);
+
     @Select("SELECT name FROM company WHERE id = #{id}")
     String selectNameById(Long id);
 

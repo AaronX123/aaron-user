@@ -101,7 +101,7 @@ public class UserController {
 
     @MethodEnhancer
     @GetMapping(ControllerConstants.GET_OPTIONS_U)
-    public CommonResponse<Map> queryRoleUser(){
+    public CommonResponse<Map> queryUserOptions(){
         List<UserOptionsDto> userRole = roleService.queryRole();
         List<UserOptionsDto> userPosition = positionService.queryPosition();
         Map<String,List> map = new HashMap<>(2);

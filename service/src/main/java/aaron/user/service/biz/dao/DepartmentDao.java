@@ -16,6 +16,9 @@ import java.util.Map;
 @Mapper
 public interface DepartmentDao extends BaseMapper<Department> {
 
+    @Select("SELECT * FROM department WHERE company_id = #{id}")
+    List<Department> listByCompanyId(@Param("id") long id);
+
     /**
      * 根据Id更新部门，判别Version和DepartmentId
      * @param department 部门信息

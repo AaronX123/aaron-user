@@ -23,12 +23,6 @@ public interface ResourceDao extends BaseMapper<Resource> {
             "</script>")
     List<Resource> listByIdList(@Param("ids") List<Long> ids);
 
-    /**
-     * 查询资源记录输出树
-     * @return 以treelist集合形式返回数据生成树
-     */
-    @Select("SELECT id,name,parent_id,version FROM resource")
-    List<TreeList> getQueryListData();
 
     /**
      * 模糊查询及查询全部记录

@@ -123,9 +123,23 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentDao, Department
         // 超级管理员
         if (AdminUtil.isSuperAdmin()){
             List<TreeList> res = new ArrayList<>();
+            // 列出所有机构
             List<Organization> organizationList = organizationService.list();
             for (Organization organization : organizationList) {
-                res.addAll(departmentDao.getQueryListData(organization.getId()));
+                // 列出该机构所有公司
+                List<Company> companyList = companyService.listByOrgId(organization.getId());
+                for (Company company : companyList) {
+                    // 列出该公司下所有部门
+                    List<Department> departmentList = departmentDao.listByCompanyId(company.getId());
+                    for (Department department : departmentList) {
+                        // 将其变成TreeList
+                        res.add(TreeList.builder().name(department.getName()).id(department.getId())
+                                .parentId(company.getId()).rootId(company.getId()).build());
+                    }
+                    res.add(TreeList.builder().id(company.getId()).name(company.getName())
+                            .parentId(organization.getId()).rootId(organization.getId()).build());
+                }
+                res.add(TreeList.builder().id(organization.getId()).name(organization.getName()).build());
             }
             return res;
         }

@@ -226,12 +226,27 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
                 }
             }
             if (user.getPositionId() != null){
+                Position p = null;
                 if (StringUtils.isNotBlank(val = cache.get(user.getPositionId()))){
                     user.setPositionName(val);
                 }else {
-                    val = positionService.getById(user.getPositionId()).getName();
+                    p = positionService.getById(user.getPositionId());
                     cache.put(user.getPositionId(),val);
                     user.setPositionName(val);
+                }
+                if (user.getCompanyId() == null){
+                    if (p != null){
+                        Company company = companyService.getById(p.getCompanyId());
+                        if (company != null){
+                            user.setCompanyName(company.getName());
+                        }
+                    }else {
+                        p = positionService.getById(user.getPositionId());
+                        Company company = companyService.getById(p.getCompanyId());
+                        if (company != null){
+                            user.setCompanyName(company.getName());
+                        }
+                    }
                 }
             }
             if (user.getRoleId() != null){
@@ -363,7 +378,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
             List<TreeList> res = new ArrayList<>();
             List<Organization> organizationList = organizationService.list();
             for (Organization organization : organizationList) {
-                res.addAll(baseMapper.getQueryListData(organization.getId()));
+                res.addAll(baseMapper.getQueryListData(null));
             }
             return res;
         }

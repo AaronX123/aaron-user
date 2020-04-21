@@ -2,21 +2,21 @@ package aaron.user.service.biz.service.impl;
 
 import aaron.common.aop.annotation.FullCommonFieldU;
 import aaron.common.aop.enums.EnumOperation;
+import aaron.common.data.common.CacheConstants;
 import aaron.common.utils.CommonUtils;
 import aaron.common.utils.SnowFlake;
 import aaron.common.utils.TokenUtils;
 import aaron.user.api.dto.*;
 import aaron.user.service.biz.dao.RoleDao;
-import aaron.user.service.biz.service.RoleResourceService;
-import aaron.user.service.biz.service.RoleService;
-import aaron.user.service.biz.service.UserRoleService;
-import aaron.user.service.biz.service.UserService;
+import aaron.user.service.biz.service.*;
 import aaron.user.service.common.utils.AdminUtil;
 import aaron.user.service.common.exception.UserError;
 import aaron.user.service.common.exception.UserException;
 import aaron.user.service.pojo.model.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +42,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
 
     @Autowired
     CacheManager cacheManager;
+
+    @Autowired
+    CompanyService companyService;
+
+    @Autowired
+    OrganizationService organizationService;
 
     @Autowired
     UserService userService;
@@ -116,11 +122,39 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
     @Override
     public List<Role> queryByCondition(Role role) {
         // 说明是超级管理员，直接显示所有角色
-        if (TokenUtils.getUser().getOrgId() == null){
-            return list();
+        List<Role> roleList = new ArrayList<>();
+        if (AdminUtil.isSuperAdmin()){
+            roleList = list();
+        }else{
+            role.setJudgeId(CommonUtils.judgeCompanyAndOrg());
+            roleList = baseMapper.query(role);
         }
-        role.setJudgeId(CommonUtils.judgeCompanyAndOrg());
-        return baseMapper.query(role);
+        // 设置company和org
+        Cache companyCache = cacheManager.getCache(CacheConstants.COMPANY_VAL);
+        Cache orgCache = cacheManager.getCache(CacheConstants.ORG_VAL);
+        for (Role role2 : roleList) {
+            if (role2.getCompanyId() != null){
+                Cache.ValueWrapper valueWrapper = companyCache.get(role2.getCompanyId());
+                if (valueWrapper != null){
+                    role2.setCompanyName((String) valueWrapper.get());
+                }else {
+                    String company = companyService.getNameById(role2.getCompanyId());
+                    role2.setCompanyName(company);
+                    companyCache.put(role2.getCompanyId(),company);
+                }
+            }
+            if (role2.getOrgId() != null){
+                Cache.ValueWrapper valueWrapper = orgCache.get(role2.getOrgId());
+                if (valueWrapper != null){
+                    role2.setOrgName((String) valueWrapper.get());
+                }else {
+                    String org = organizationService.getNameById(role2.getOrgId());
+                    role2.setOrgName(org);
+                    orgCache.put(role2.getOrgId(),org);
+                }
+            }
+        }
+        return roleList;
     }
 
     @Transactional(rollbackFor = Exception.class)

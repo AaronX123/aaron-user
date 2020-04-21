@@ -19,4 +19,6 @@ public interface OrganizationService extends IService<Organization> {
     boolean delete(List<OrganizationDto> list);
 
     List<Organization> list(OrganizationDto organizationDto);
+
+    String getNameById(long id);
 }

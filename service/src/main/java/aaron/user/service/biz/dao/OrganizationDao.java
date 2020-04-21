@@ -3,6 +3,7 @@ package aaron.user.service.biz.dao;
 import aaron.user.service.pojo.model.Organization;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -14,6 +15,9 @@ import java.util.List;
  */
 @Mapper
 public interface OrganizationDao extends BaseMapper<Organization> {
+
+    @Select("SELECT name FROM organization WHERE id = #{id}")
+    String getById(@Param("id") long id);
     /**
      * 模糊查询及查询全部记录
      * @param organization 组织机构查询条件

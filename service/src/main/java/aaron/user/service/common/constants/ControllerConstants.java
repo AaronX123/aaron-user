@@ -23,6 +23,7 @@ public class ControllerConstants {
     public static final String GET_DEP_LEVEL = "/queryDepartmentLevel";
     public static final String GET_DEP_PARENT = "/queryDepartmentParent";
     public static final String GET_DEP_TREE_DATA = "/getDepartmentList";
+    public static final String GET_DEP_OP = "/queryDepartmentOp";
 
     public static final String USER_INFO = "/user/info";
     public static final String USER_MENU = "/user/menu";

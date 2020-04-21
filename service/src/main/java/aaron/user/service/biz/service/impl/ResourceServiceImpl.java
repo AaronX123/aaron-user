@@ -65,7 +65,7 @@ public class ResourceServiceImpl extends ServiceImpl<ResourceDao, Resource> impl
 
     @Override
     public List<TreeListDto> getQueryList() {
-        List<TreeList> resourceList = baseMapper.getQueryListData();
+        List<Resource> resourceList = list();
         return CommonUtils.convertList(resourceList,TreeListDto.class);
     }
 

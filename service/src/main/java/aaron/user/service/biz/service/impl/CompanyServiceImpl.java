@@ -113,4 +113,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyDao, Company> impleme
     public String getNameById(long id) {
         return baseMapper.selectNameById(id);
     }
+
+    @Override
+    public List<Company> listByOrgId(long orgId) {
+        return baseMapper.listByOrgId(orgId);
+    }
 }
