@@ -166,6 +166,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
             for (RoleUser roleUser : roleUsers) {
                 roleUser.setId(snowFlake.nextId());
                 baseMapper.insertUserForRole(roleUser);
+                // 同时要更新用户的companyId
+                userService.updateUserAfterAllocRole(roleUser.getUserId(),roleUser.getCompanyId());
             }
         }catch (Exception e){
             throw new UserException(UserError.SAVE_FAIL);
@@ -210,6 +212,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
             return baseMapper.queryUserForRoleSP();
 
         }
+        // 查询不是当前角色的机构用户
+
         return baseMapper.queryUserForRole(role);
     }
 

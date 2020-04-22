@@ -59,4 +59,11 @@ public interface UserService extends IService<User> {
      * @return 以树（treelist）形式返回数据
      */
     List<TreeList> getQueryListData(Long judgeId);
+
+    /**
+     * 分配角色后需要更新用户公司
+     * @param userId
+     * @param companyId
+     */
+    void updateUserAfterAllocRole(Long userId, Long companyId);
 }

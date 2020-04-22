@@ -94,6 +94,11 @@ public class RoleController {
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,map);
     }
 
+    /**
+     * 为用户分配角色
+     * @param request
+     * @return
+     */
     @MethodEnhancer
     @PostMapping(ControllerConstants.ALLOC_USER_FOR_ROLE)
     public CommonResponse<Boolean> allocUserRole(@RequestBody CommonRequest<List<RoleUserVo>> request){

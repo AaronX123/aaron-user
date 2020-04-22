@@ -9,8 +9,6 @@ import aaron.user.api.dto.UserDto;
 import aaron.user.api.dto.CompanyAndUserVo;
 import aaron.user.service.biz.service.CompanyService;
 import aaron.user.service.biz.service.UserService;
-import aaron.user.service.common.exception.UserError;
-import aaron.user.service.common.exception.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,16 +42,8 @@ public class UserApiImpl implements UserApi {
     @Override
     @PostMapping(ApiConstant.GET_USER_NAME)
     public CommonResponse<CompanyAndUserVo> getUserInfo(@RequestBody CommonRequest<List<Long>> request) {
-        try {
-            CompanyAndUserVo res = userService.getUserData(request.getData());
-            return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,res);
-        }catch (Exception e){
-            if (e instanceof UserException){
-                UserException userException = (UserException) e;
-                return new CommonResponse<>(userException.getErrorCode(),userException.getMessage(),null);
-            }
-            return new CommonResponse<>(state.FAIL,state.FAIL_MSG,null);
-        }
+        CompanyAndUserVo res = userService.getUserData(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,res);
     }
 
     /**
@@ -65,16 +55,8 @@ public class UserApiImpl implements UserApi {
     @Override
     @PostMapping(ApiConstant.GET_USER_NAME_BY_ID)
     public CommonResponse<String> getUserNameById(@RequestBody CommonRequest<Long> request) {
-        try {
-            String name = userService.getUserName(request.getData());
-            return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,name);
-        }catch (Exception e){
-            if (e instanceof UserException){
-                UserException userException = (UserException) e;
-                return new CommonResponse<>(userException.getErrorCode(),userException.getMessage(),null);
-            }
-            return new CommonResponse<>(state.FAIL,state.FAIL_MSG,null);
-        }
+        String name = userService.getUserName(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,name);
     }
 
     /**
@@ -86,16 +68,8 @@ public class UserApiImpl implements UserApi {
     @Override
     @PostMapping(ApiConstant.GET_SCORING_OFFICER)
     public CommonResponse<List<UserDto>> queryScoringOfficer(@RequestBody CommonRequest<UserDto> request) {
-        try {
-            List<UserDto> userDtoList = userService.queryScoringOfficerList(request.getData());
-            return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,userDtoList);
-        }catch (Exception e){
-            if (e instanceof UserException){
-                UserException userException = (UserException) e;
-                return new CommonResponse<>(userException.getErrorCode(),userException.getMessage(),null);
-            }
-            return new CommonResponse<>(state.FAIL,state.FAIL_MSG,null);
-        }
+        List<UserDto> userDtoList = userService.queryScoringOfficerList(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,userDtoList);
     }
 
     /**
@@ -107,16 +81,8 @@ public class UserApiImpl implements UserApi {
     @Override
     @PostMapping(ApiConstant.GET_ID_BY_NAME)
     public CommonResponse<Long> getUserIdByName(@RequestBody CommonRequest<String> request) {
-        try {
-            Long mostPossibleId = userService.getMostPossibleUserId(request.getData());
-            return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,mostPossibleId);
-        }catch (Exception e){
-            if (e instanceof UserException){
-                UserException userException = (UserException) e;
-                return new CommonResponse<>(userException.getErrorCode(),userException.getMessage(),null);
-            }
-            return new CommonResponse<>(state.FAIL,state.FAIL_MSG,null);
-        }
+        Long mostPossibleId = userService.getMostPossibleUserId(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,mostPossibleId);
     }
 
     /**
@@ -128,15 +94,7 @@ public class UserApiImpl implements UserApi {
     @Override
     @PostMapping(ApiConstant.GET_COMPANY_NAME)
     public CommonResponse<String> getCompanyById(@RequestBody CommonRequest<Long> request) {
-        try {
-            String company = companyService.getNameById(request.getData());
-            return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,company);
-        }catch (Exception e){
-            if (e instanceof UserException){
-                UserException userException = (UserException) e;
-                return new CommonResponse<>(userException.getErrorCode(),userException.getMessage(),null);
-            }
-            return new CommonResponse<>(state.FAIL,state.FAIL_MSG,null);
-        }
+        String company = companyService.getNameById(request.getData());
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,company);
     }
 }

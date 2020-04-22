@@ -15,6 +15,7 @@ import aaron.user.service.common.exception.UserException;
 import aaron.user.service.common.utils.SqlUtil;
 import aaron.user.service.pojo.model.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
@@ -96,6 +97,13 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         ByteSource salt = ByteSource.Util.bytes(user.getName());
         String pwd = new SimpleHash("MD5",user.getPassword(),salt,32).toString();
         user.setPassword(pwd);
+        // 如果职位不属于该公司则报错
+        if (userDto.getPositionId() != null){
+            Position position = positionService.getById(userDto.getPositionId());
+            if (!position.getCompanyId().equals(userDto.getCompanyId())){
+                throw new UserException(UserError.POSITION_INVALID);
+            }
+        }
         if (updateById(user)){
             return true;
         }
@@ -248,8 +256,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
                     user.setPositionName(val);
                 }else {
                     p = positionService.getById(user.getPositionId());
-                    cache.put(user.getPositionId(),val);
-                    user.setPositionName(val);
+                    cache.put(user.getPositionId(),p.getName());
+                    user.setPositionName(p.getName());
                 }
                 if (user.getCompanyId() == null){
                     if (p != null){
@@ -395,7 +403,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
             List<TreeList> res = new ArrayList<>();
             List<Organization> organizationList = organizationService.list();
             for (Organization organization : organizationList) {
-                res.addAll(baseMapper.getQueryListData(null));
+                res.addAll(baseMapper.getQueryListData(organization.getId()));
             }
             return res;
         }
@@ -415,4 +423,20 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         }
         return res;
   }
+
+    /**
+     * 分配角色后需要更新用户公司
+     *
+     * @param userId
+     * @param companyId
+     */
+    @Override
+    public void updateUserAfterAllocRole(Long userId, Long companyId) {
+        UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id",userId);
+        wrapper.set("company_id",companyId);
+        if (!update(wrapper)){
+            throw new UserException(UserError.UPDATE_COMPANY_FAIL);
+        }
+    }
 }

@@ -20,11 +20,14 @@ public enum  UserError {
     ALLOC_FAIL("030010","分配失败"),
     ORG_IS_IN_USE("030011","所选机构有子公司，无法直接删除"),
 
-    DEL_ROLE_FAIL("030011","删除角色: {}失败"),
-    DEL_USER_FAIL("030012","删除用户: {}失败"),
+    DEL_ROLE_FAIL("030011","删除角色: [%s]失败"),
+    DEL_USER_FAIL("030012","删除用户: [%s]失败"),
     RELEASE_RESOURCE_FAIL("030013","释放资源失败"),
     SAVE_ROLE_RESOURCE("030013","分配资源失败"),
     LOGIN_FAIL("030014","用户名或密码错误"),
+    UPDATE_COMPANY_FAIL("030015","更新用户所在公司失败"),
+    POSITION_INVALID("030016","职位不属于该用户所在公司"),
+
     ;
     String msg;
     String code;
