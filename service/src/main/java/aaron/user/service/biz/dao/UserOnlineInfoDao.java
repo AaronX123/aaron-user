@@ -37,7 +37,7 @@ public interface UserOnlineInfoDao extends BaseMapper<UserOnlineInfo> {
             "AND b.company_id = #{judgeId} " +
             "</if>" +
             "</where>" +
-            "ORDER BY status DESC,online_time DESC" +
+            "ORDER BY status DESC,online_time ASC" +
             "</script>")
     List<UserOnlineInfo> query(UserOnlineInfo userOnlineInfo);
 }

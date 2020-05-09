@@ -32,14 +32,15 @@ spring:
     port: 6379
     password:
 server:
-  port: ${random.int[10000,65535]}
+  #port: ${random.int[10000,65535]}
   servlet:
     context-path: /user
+  port: 8775
 eureka:
   client:
     service-url:
      # defaultZone: http://118.31.7.229:8761/eureka
-      defaultZone: http://192.168.1.100:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
     registry-fetch-interval-seconds: 5
   instance:
     prefer-ip-address: false

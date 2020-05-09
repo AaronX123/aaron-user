@@ -13,13 +13,12 @@ import aaron.common.utils.TokenUtils;
 import aaron.user.api.dto.SystemParamDto;
 import aaron.user.api.dto.TreeListDto;
 import aaron.user.service.biz.dao.SystemParamDao;
-import aaron.user.service.biz.manage.BaseInfoApi;
+import aaron.user.service.manage.BaseInfoApi;
 import aaron.user.service.biz.service.SystemParamService;
 import aaron.user.service.common.exception.UserError;
 import aaron.user.service.common.exception.UserException;
 import aaron.user.service.pojo.model.SystemParam;
 import aaron.user.service.pojo.model.TreeList;
-import aaron.user.service.pojo.vo.SystemParamItemVo;
 import aaron.user.service.pojo.vo.SystemParamListVo;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author xiaoyouming

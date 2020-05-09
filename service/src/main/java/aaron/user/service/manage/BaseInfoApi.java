@@ -1,4 +1,4 @@
-package aaron.user.service.biz.manage;
+package aaron.user.service.manage;
 
 import aaron.baseinfo.api.constant.ApiConstant;
 import aaron.baseinfo.api.dto.BaseDataDto;

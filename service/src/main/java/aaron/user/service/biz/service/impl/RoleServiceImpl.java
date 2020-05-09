@@ -192,9 +192,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
                 roleResourceService.save(role);
             }
             return true;
-//            if (roleResourceService.saveBatch(roles)){
-//                return true;
-//            }
         }
         throw new UserException(UserError.SAVE_FAIL);
     }
