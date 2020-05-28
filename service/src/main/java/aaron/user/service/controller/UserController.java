@@ -132,10 +132,16 @@ public class UserController {
      * @return 是否查询成功，成功返回角色list，若失败返回失败信息
      */
     @MethodEnhancer
-    @PostMapping(value = "/queryUserManagementRole")
+    @PostMapping(ControllerConstants.QUERY_USER_ROLE)
     public CommonResponse<List> queryRoleOfUser(@RequestBody CommonRequest<Long> commonRequest) {
         List<UserDto> userDTOList = userService.queryRoleOfUser(commonRequest.getData());
         List<UserListVo> userRoleDTOS = CommonUtils.convertList(userDTOList,UserListVo.class);
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,userRoleDTOS);
+    }
+
+    @MethodEnhancer
+    @PostMapping(ControllerConstants.EXIST_CODE)
+    public CommonResponse<Boolean> existCode(@RequestBody CommonRequest<String> code){
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,userService.notExistCode(code.getData()));
     }
 }

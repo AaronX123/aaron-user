@@ -111,7 +111,8 @@ public class ControllerConstants {
     public static final String QUERY_U = "/queryUserManagement";
     public static final String GET_LIST_U = "/getUserManagementList";
     public static final String ALLOC_USER = "/allocationUserManagement";
-
+    public static final String QUERY_USER_ROLE = "/queryUserManagementRole";
+    public static final String EXIST_CODE = "/existCode";
     /**
      * useronline
      */

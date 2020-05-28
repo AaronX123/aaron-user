@@ -83,6 +83,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         // 32次散列
         String pwd = new SimpleHash("MD5",user.getPassword(),salt,32).toString();
         user.setPassword(pwd);
+        // 将公司设置为角色所在公司
+        Role role = roleService.getById(userDto.getRoleId());
+        user.setCompanyId(role.getCompanyId());
         try {
             save(user);
             userRole.setId(snowFlake.nextId());
@@ -461,5 +464,18 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         List<User> roleIdS = baseMapper.queryRoleId(user);
         List<UserDto> userDTOList = CommonUtils.convertList(roleIdS,UserDto.class);
         return userDTOList;
+    }
+
+    /**
+     * 判断是否存在该用户工号
+     *
+     * @param code
+     * @return
+     */
+    @Override
+    public boolean notExistCode(String code) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("code",code);
+        return count(wrapper) == 0;
     }
 }

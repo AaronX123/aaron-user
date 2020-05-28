@@ -73,4 +73,11 @@ public interface UserService extends IService<User> {
      * @return 拥有的角色集合
      */
     List<UserDto> queryRoleOfUser(Long userId);
+
+    /**
+     * 判断是否存在该用户工号
+     * @param code
+     * @return
+     */
+    boolean notExistCode(String code);
 }
