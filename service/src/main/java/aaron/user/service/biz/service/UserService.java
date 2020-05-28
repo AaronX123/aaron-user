@@ -66,4 +66,11 @@ public interface UserService extends IService<User> {
      * @param companyId
      */
     void updateUserAfterAllocRole(Long userId, Long companyId);
+
+    /**
+     * 查询用户所拥有的角色
+     * @param userId 用户ID
+     * @return 拥有的角色集合
+     */
+    List<UserDto> queryRoleOfUser(Long userId);
 }

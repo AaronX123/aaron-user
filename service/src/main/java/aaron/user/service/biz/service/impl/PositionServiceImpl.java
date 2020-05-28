@@ -5,6 +5,7 @@ import aaron.common.aop.enums.EnumOperation;
 import aaron.common.data.exception.StarterError;
 import aaron.common.data.exception.StarterException;
 import aaron.common.utils.CommonUtils;
+import aaron.common.utils.SqlUtil;
 import aaron.common.utils.TokenUtils;
 import aaron.common.utils.jwt.UserPermission;
 import aaron.user.api.dto.CompanyDto;
@@ -91,7 +92,7 @@ public class PositionServiceImpl extends ServiceImpl<PositionDao, Position> impl
             }
             return positionList;
         }
-        // 根据Id或者名称模糊查询，当条件都没有时，根据操作者的机构/公司id查询
+        // 根据Id或者名称模糊查询，当条件都没有时，根据操作者的机构/公司id查询,最后过滤名称
         QueryWrapper<Position> positionQueryWrapper = new QueryWrapper<>();
         if (position.getId() != null){
             positionQueryWrapper.eq("id",position.getId());
@@ -100,16 +101,13 @@ public class PositionServiceImpl extends ServiceImpl<PositionDao, Position> impl
         UserPermission userPermission = TokenUtils.getUser();
         if (userPermission.getCompanyId() != null){
             positionQueryWrapper.eq("company_id",userPermission.getCompanyId());
-        }else if (StringUtils.isNotBlank(position.getName())){
-            positionQueryWrapper.likeRight("name",position.getName());
+            if (StringUtils.isNotBlank(position.getName())){
+                positionQueryWrapper.likeRight("name",position.getName());
+            }
             List<Position> positionList = list(positionQueryWrapper);
-            List<Company> companyList = companyService.queryCompany(new CompanyDto());
+            Company company = companyService.getById(userPermission.getCompanyId());
             for (Position position1 : positionList) {
-                for (Company company : companyList) {
-                    if (position1.getCompanyId().equals(company.getId())){
-                        position1.setCompanyName(company.getName());
-                    }
-                }
+                position1.setCompanyName(company.getName());
             }
             return positionList;
         }
@@ -121,6 +119,7 @@ public class PositionServiceImpl extends ServiceImpl<PositionDao, Position> impl
                 return null;
             }
             List<Position> positionList = baseMapper.listByCompanyId(companyIdList);
+            positionList = positionList.stream().filter(p -> SqlUtil.like(position.getName(),p.getName())).collect(Collectors.toList());
             for (Position position1 : positionList) {
                 for (Company company : companyList) {
                     if (position1.getCompanyId().equals(company.getId())){

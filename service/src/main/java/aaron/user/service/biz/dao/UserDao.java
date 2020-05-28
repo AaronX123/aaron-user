@@ -151,4 +151,12 @@ public interface UserDao extends BaseMapper<User> {
             "ORDER BY parent_id" +
             "</script>")
     List<TreeList> getQueryListData(Long judgeId);
+
+    /**
+     * 查询角色Id
+     * @param user 用户Id
+     * @return 根据用户Id查询所拥有的角色Id集合
+     */
+    @Select("SELECT role_id AS roleId FROM user_role WHERE user_id = #{id} ")
+    List<User> queryRoleId(User user);
 }

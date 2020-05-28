@@ -7,6 +7,7 @@ import aaron.common.utils.CommonUtils;
 import aaron.common.utils.SnowFlake;
 import aaron.common.utils.TokenUtils;
 import aaron.user.api.dto.*;
+import aaron.user.service.biz.dao.RoleDao;
 import aaron.user.service.biz.dao.UserDao;
 import aaron.user.service.biz.service.*;
 import aaron.user.service.common.utils.AdminUtil;
@@ -26,6 +27,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +69,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
     @Autowired
     RoleService roleService;
 
+    @Resource
+    RoleDao roleDao;
 
     @Transactional(rollbackFor = Exception.class)
     @FullCommonFieldU
@@ -303,8 +307,10 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
     @Override
     public boolean addRoleForUser(UserRoleDto userRoleDTO) {
         try {
-            removeById(userRoleDTO.getUserId());
+            // 先删除user_role
+            roleDao.deleteUser(userRoleDTO.getUserId());
             List<UserRole> userRoleList = new ArrayList<>();
+            // 重新绑定角色关系
             for (Long roleId : userRoleDTO.getRoleId()) {
                 UserRole userRole = CommonUtils.copyProperties(userRoleDTO,UserRole.class);
                 userRole.setId(snowFlake.nextId());
@@ -314,6 +320,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
             if (!CommonUtils.isEmpty(userRoleList)){
                 userRoleService.saveBatch(userRoleList);
             }
+            // 同时要更新用户的companyId
+            Role role = roleDao.selectById(userRoleDTO.getRoleId().get(0));
+            userService.updateUserAfterAllocRole(userRoleDTO.getUserId(),role.getCompanyId());
         }catch (Exception e){
             throw new UserException(UserError.ALLOC_FAIL);
         }
@@ -438,5 +447,19 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         if (!update(wrapper)){
             throw new UserException(UserError.UPDATE_COMPANY_FAIL);
         }
+    }
+
+    /**
+     *
+     * @param userId 用户ID
+     * @return
+     */
+    @Override
+    public List<UserDto> queryRoleOfUser(Long userId) {
+        User user = new User();
+        user.setId(userId);
+        List<User> roleIdS = baseMapper.queryRoleId(user);
+        List<UserDto> userDTOList = CommonUtils.convertList(roleIdS,UserDto.class);
+        return userDTOList;
     }
 }

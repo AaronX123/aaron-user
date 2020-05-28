@@ -125,4 +125,17 @@ public class UserController {
         userService.addRoleForUser(request.getData());
         return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,true);
     }
+
+    /**
+     * 查询用户所拥有的角色
+     * @param commonRequest 用户Id
+     * @return 是否查询成功，成功返回角色list，若失败返回失败信息
+     */
+    @MethodEnhancer
+    @PostMapping(value = "/queryUserManagementRole")
+    public CommonResponse<List> queryRoleOfUser(@RequestBody CommonRequest<Long> commonRequest) {
+        List<UserDto> userDTOList = userService.queryRoleOfUser(commonRequest.getData());
+        List<UserListVo> userRoleDTOS = CommonUtils.convertList(userDTOList,UserListVo.class);
+        return new CommonResponse<>(state.SUCCESS,state.SUCCESS_MSG,userRoleDTOS);
+    }
 }

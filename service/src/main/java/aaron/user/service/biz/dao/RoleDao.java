@@ -3,6 +3,7 @@ package aaron.user.service.biz.dao;
 import aaron.user.api.dto.UserOptionsDto;
 import aaron.user.service.pojo.model.*;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import lombok.Data;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -35,6 +36,11 @@ public interface RoleDao extends BaseMapper<Role> {
     @Select("SELECT id AS roleId,name AS roleName,company_id FROM role ORDER BY LENGTH(name) ")
     List<UserOptionsDto> queryRole();
 
+    @Select("SELECT id AS roleId,name AS roleName,company_id FROM role where company_id = #{id}")
+    List<UserOptionsDto> queryRoleByCompany(@Param("id") long companyId);
+
+    @Select("SELECT id AS roleId,name AS roleName,company_id FROM role where org_id = #{id}")
+    List<UserOptionsDto> queryRoleByOrg(@Param("id") long orgId);
     /**
      * 查询角色所拥有的资源
      * @param role 角色
@@ -121,6 +127,9 @@ public interface RoleDao extends BaseMapper<Role> {
     @Delete("DELETE FROM user_role where role_id = #{roleId}")
     boolean deleteUserForRole(RoleUser roleUser);
 
+
+    @Delete("DELETE FROM user_role WHERE user_id = #{id}")
+    boolean deleteUser(@Param("id") long userId);
     /**
      * 模糊查询及查询全部记录
      * @param role 角色查询条件

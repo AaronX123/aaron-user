@@ -6,6 +6,7 @@ import aaron.common.data.common.CacheConstants;
 import aaron.common.utils.CommonUtils;
 import aaron.common.utils.SnowFlake;
 import aaron.common.utils.TokenUtils;
+import aaron.common.utils.jwt.UserPermission;
 import aaron.user.api.dto.*;
 import aaron.user.service.biz.dao.RoleDao;
 import aaron.user.service.biz.service.*;
@@ -13,6 +14,7 @@ import aaron.user.service.common.utils.AdminUtil;
 import aaron.user.service.common.exception.UserError;
 import aaron.user.service.common.exception.UserException;
 import aaron.user.service.pojo.model.*;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,12 +159,19 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
         return roleList;
     }
 
+    /**
+     * 为角色分配用户
+     * @param roleUserDtoList
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean addUserForRole(List<RoleUserDto> roleUserDtoList) {
         List<RoleUser> roleUsers = CommonUtils.convertList(roleUserDtoList,RoleUser.class);
         try {
-            baseMapper.deleteUserForRole(roleUsers.get(0));
+            // 删掉该用户的角色
+            baseMapper.deleteUser(roleUsers.get(0).getUserId());
+            // baseMapper.deleteUserForRole(roleUsers.get(0));
             for (RoleUser roleUser : roleUsers) {
                 roleUser.setId(snowFlake.nextId());
                 baseMapper.insertUserForRole(roleUser);
@@ -175,7 +184,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
         return true;
     }
 
-
+    /**
+     * 为角色分配资源
+     * @param resourceDtos
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean addResourceForRole(List<RoleResourceDto> resourceDtos) {
@@ -235,6 +248,13 @@ public class RoleServiceImpl extends ServiceImpl<RoleDao, Role> implements RoleS
      */
     @Override
     public List<UserOptionsDto> queryRole() {
-        return baseMapper.queryRole();
+        if (AdminUtil.isSuperAdmin()){
+            return baseMapper.queryRole();
+        }
+        UserPermission userPermission = TokenUtils.getUser();
+        if (userPermission.getCompanyId() != null){
+            return baseMapper.queryRoleByCompany(userPermission.getCompanyId());
+        }
+        return baseMapper.queryRoleByOrg(userPermission.getOrgId());
     }
 }
